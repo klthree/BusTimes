@@ -7,11 +7,10 @@ const app = express();
 
 app.use(express.static(path.join(__dirname, '../public')));
 
-app.get('/bus', (req, res) => {
+app.get('/bus', async (req, res) => {
     loc = "";
-    bus_routes.get_routes(loc, (x) => {
-        res.send(x);    
-    })
+    let x = await bus_routes.get_routes(loc);
+    res.send(x);
 })
 
 app.listen(3000, () => {
