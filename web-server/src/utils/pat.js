@@ -1,18 +1,22 @@
 // git testing
-
 const got = require('got');
+const bus_key = require('./key')();
+
+const baseURL = 'http://truetime.portauthority.org/bustime/api/v3';
+
 let get_loc = (loc) => {
     return new Promise((resolve, reject) => {
         resolve(loc);
     })
 };
 
+// Returns a list of bus and rail routes in Pittsburgh.
 let get_routes = (loc) => {
     return new Promise((resolve, reject) => {
         (async () => {
             try {
-                const busURL = 'http://truetime.portauthority.org/bustime/api/v3/getroutes?key=Tn3GgGfQdbNCmy3HMKix3XLFa&format=json';
-                const response = await got(busURL);
+                const routeURL = baseURL + '/getroutes?key=' + bus_key + '&format=json';
+                const response = await got(routeURL);
                 const resp = JSON.parse(response.body);
                 const route_list = [];
                 const locRegExp = new RegExp(loc, 'i');
@@ -32,18 +36,15 @@ let get_routes = (loc) => {
                 console.error(error);
             }
         })();
-    
     })
 }
 
 // Given an array of routes, returns possible directions. Largely trivial for
 // Pittsburgh - everything is Inbound (toward downtown) or Outbound (away from downtown).
 const get_dir = (route_list) => {
-
     const rl = route_list.map(async (route) => {
-        const dirURL = 'http://truetime.portauthority.org/bustime/api/v3/getdirections?key=Tn3GgGfQdbNCmy3HMKix3XLFa&rt='
+        const dirURL = baseURL + '/getdirections?key=' + bus_key + '&rt='
                             + route.rt + '&format=json&rtpidatafeed=' + route.rtpidatafeed;
-    
         const response = await got(dirURL);
         resp = JSON.parse(response.body);
         route.dir = resp["bustime-response"].directions;
@@ -53,11 +54,12 @@ const get_dir = (route_list) => {
     return Promise.all(rl);
 }
 
+// Given a route and direction, returns a list of stops along that route
 const get_stops = (route, direction, rtpi) => {
     return new Promise((resolve, reject) => {
         (async () => {
             try {
-                const stopsURL = 'http://truetime.portauthority.org/bustime/api/v3/getstops?key=Tn3GgGfQdbNCmy3HMKix3XLFa&rt='
+                const stopsURL = baseURL + '/getstops?key=' + bus_key + '&rt='
                                         + route + '&dir=' + direction + '&format=json&rtpidatafeed=' + rtpi;
                 const response = await got(stopsURL);
                 const resp = JSON.parse(response.body);
@@ -69,11 +71,24 @@ const get_stops = (route, direction, rtpi) => {
     })
 }
 
+// const get_all_stops = () {
+//     return new Promise((resolve, reject) => {
+//         (async () => {
+//             try{
+
+//             } catch(e) {
+//                 console.error(e);
+//             }
+//         })()
+//     })
+// }
+
+// Given a route, returns a list of vehicles currently running on that route
 const get_vehicles = (route) => {
     return new Promise((resolve, reject) => {
         (async () => {
             try {
-                const vehURL = 'http://truetime.portauthority.org/bustime/api/v3/getvehicles?key=Tn3GgGfQdbNCmy3HMKix3XLFa&rt='
+                const vehURL = baseURL + '/getvehicles?key=' + bus_key + '&rt='
                                         + route + '&format=json&rtpidatafeed=Port%20Authority%20Bus';
                 const response = await got(vehURL);
                 const resp = JSON.parse(response.body);
@@ -85,9 +100,27 @@ const get_vehicles = (route) => {
     })
 }
 
+const get_predictions = (stpid, rt) => {
+    return new Promise((resolve, reject) => {
+        (async () => {
+            
+            try {
+                const predictURL = baseURL + '/getpredictions?key=' + bus_key
+                        + '&stpid=' + stpid + '&format=json&rtpidatafeed=Port%20Authority%20Bus';
+                const response = await got(predictURL);
+                const resp = JSON.parse(response.body);
+                resolve(resp["bustime-response"].prd);
+            } catch(e) {
+                console.error(e);
+            }
+        })()
+    })
+}
+
 module.exports = {
     get_routes,
     get_dir,
     get_stops,
-    get_vehicles
+    get_vehicles,
+    get_predictions
 }
