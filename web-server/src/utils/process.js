@@ -10,7 +10,7 @@ const pathfinder = (start, end) => {
     const to_take = [];
     
     // https://stackoverflow.com/a/32961666
-    near_start.sorted_stops.forEach(stop_s => {
+    outer_loop: near_start.sorted_stops.forEach(stop_s => {
         near_dest.sorted_stops.forEach(stop_d => {
             stop_s.routes.forEach(rt_s => {
                 stop_d.routes.forEach(rt_d => {
@@ -56,7 +56,7 @@ const pathfinder = (start, end) => {
 const adjacency = (routeA, routeB) => {
     // if adjacent, return the stops
     // if not, return null
-    let acceptable_dist = 0.1;
+    let acceptable_dist = 0.01;
     const stopOptions = [];
 
     // console.log(routeA)
