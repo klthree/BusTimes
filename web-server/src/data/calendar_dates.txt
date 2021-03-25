@@ -1,0 +1,13 @@
+service_id,date,exception_type
+2009-Collier-Weekday-25,20200907,2
+2009-Collier-Sunday-15,20200907,1
+2009-Liberty-Weekday-25,20200907,2
+2009-Liberty-Sunday-15,20200907,1
+2009-Mifflin-Weekday-25,20200907,2
+2009-Mifflin-Sunday-15,20200907,1
+2009-Ross-Weekday-25,20200907,2
+2009-Ross-Sunday-15,20200907,1
+2009-Village-Weekday-25,20200907,2
+2009-Village-Sunday-15,20200907,1
+W,20200907,2
+U,20200907,1
