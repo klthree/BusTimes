@@ -192,9 +192,10 @@ const euclideanDistance = (ptA, ptB) => {
 // })();
 
 /**
+ * Iterates through obj searching for tripId, returning index of match, or -1 if not found.
  * 
- * @param {*} obj 
- * @param {*} tripId 
+ * @param {Object} obj - Array containing tripId's, or object containing tripId's 
+ * @param {String} tripId - Numerical id for a trip, used in trips.txt, stop_times.txt,
  * @returns 
  */
 const containsTrip = (obj, tripId) => {
@@ -229,7 +230,12 @@ const containsTrip = (obj, tripId) => {
     return -1;
 }
 
-
+/**
+ * Iterates through array arr and return the index of stopId, or -1 if not found.
+ * @param {Object} arr 
+ * @param {String} stopId 
+ * @returns 
+ */
 const containsStop = (arr, stopId) => {
     for(let i = 0; i < arr.length; i++) {
         if(arr[i][0] === stopId) {
@@ -239,6 +245,10 @@ const containsStop = (arr, stopId) => {
     return -1;
 }
 
+/**
+ * 
+ * @param {Object} obj 
+ */
 const trimmer = (obj) => {
     let keyList = Object.keys(obj);
     for(let i = 0; i < keyList.length; i++) {
