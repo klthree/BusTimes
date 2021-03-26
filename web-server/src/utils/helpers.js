@@ -1,10 +1,9 @@
 /*
-
     const euclideanDistance = (ptA, ptB)
     const containsTrip = (obj, tripId)    
     const containsStop = (arr, stopId)
     const trimmer = (obj)
-    */
+*/
 
 
 /**
