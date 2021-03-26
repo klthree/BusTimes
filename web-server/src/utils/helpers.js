@@ -1,3 +1,18 @@
+/*
+    const getToday = ()
+    const addTime = (toAdd)
+    const to12 = (time)
+    const before = (timeA, timeB)
+    const euclideanDistance = (ptA, ptB)
+    const checkTime = (datetimeToTest, wait) 
+    const containsTrip = (obj, tripId)    
+    const containsStop = (arr, stopId)
+    const trimmer = (obj)
+    */
+
+/**
+ * @returns {string} - Current day of week as "Sunday", "Saturday", or "Weekday"
+ */
 const getToday = () => {
     let today = new Date(Date.now()).getDay();
     
@@ -10,7 +25,11 @@ const getToday = () => {
     }
 }
 
-// Takes time in minutes to add to current time and returns result in ms
+/**
+ * 
+ * @param {number} toAdd - Number of minutes to add to current time
+ * @returns {number} - current time + toAdd in ms
+ */
 const addTime = (toAdd) => {
     let msps = 1000;
     let spm = 60;
@@ -36,7 +55,11 @@ const addTime = (toAdd) => {
 //     console.log(end[0] + "s " + end[1]/1000000 + "ms")
 // })();
 
-// Takes a string representing time in 24-hr format and returns that time in 12-hr format
+/**
+ * Converts a time from 24 hour to 12 hour
+ * @param {string} time - as hh:mm:ss
+ * @returns {string} current time in 12 hour format, hh:mm:ss
+ */
 const to12 = (time) => {
     let hr = time.slice(0, 2);
 
@@ -59,7 +82,12 @@ const to12 = (time) => {
 //     console.log(end[0] + "s " + end[1]/1000000 + "ms")
 // })();
 
-// Takes two times as strings and returns true if the time specified by the first argument precedes the second
+/**
+ * 
+ * @param {string} timeA 
+ * @param {string} timeB - "hh:mm:ss"
+ * @returns {boolean} - true if timeA is earlier than time B
+ */
 const before = (timeA, timeB) => {
     const today = new Date(Date.now()).toLocaleDateString();
     return (new Date(today + " " + timeB).getTime() - new Date(today + " " + timeA).getTime()) > 0;
@@ -75,9 +103,16 @@ const before = (timeA, timeB) => {
 // })();
 
 
-// takes two objects with properties lat and lon
+// 
 // returns rough approximation of the distance between those points. Not accurate on larger scale.
-let distance = (ptA, ptB) => {
+/**
+ * Takes two objects with properties lat and lon.
+ * 
+ * @param {Object} ptA 
+ * @param {Object} ptB 
+ * @returns {number} - Approximate Euclidean distance between ptA and ptB
+ */
+const euclideanDistance = (ptA, ptB) => {
     let latA, lonA, latB, lonB;
 
     if(typeof ptA.lat === "string") {
@@ -107,7 +142,7 @@ let distance = (ptA, ptB) => {
     return d;
 }
 
-// TEST: distance
+// TEST: euclideanDistance
 // (() => {
 //     console.log("\nTesting distance(ptA, ptB):");
 //     const ptA = {
@@ -125,50 +160,42 @@ let distance = (ptA, ptB) => {
 // })();
 
 /**
- * 
- * time, string - Time to evaluate
- * wait, number - Time, in minutes, to establish upper boundary on valid time.
- * returns true if 'time' is within the temporal window
- * delimited by the current time and the current time + wait.
+ * Accepts an Object dateTimeToTest and returns true if the time it specifies falls between 
+ * now and 'wait' minutes from now. Returns false if time is outside that window or undefined.
+ * @param {Object} datetimeToTest - Date and time to test. {year, month, day, hour, minute}
+ * @param {number} wait - Number of minutes
+ * @returns {boolean} - true if time is 
  */
-const checkTime = (time, wait) => {
-    if(time === undefined) {
-        return false;
-    }
-    let nowHours = new Date(Date.now()).getHours();
-
-    if(nowHours === 0) {
-        nowHours = 24;
-    } else if(nowHours === 1) {
-        nowHours = 25;
-    } else if(nowHours === 2) {
-        nowHours = 26;
-    }
-
-    let nowMinutes = new Date(Date.now()).getMinutes();
-    // console.log("NOW: " + nowMinutes)
-    let testHours = parseInt(time.slice(0, 2));
-    // console.log("TEST: " + testHours)
-    let testMinutes = parseInt(time.slice(3, 5));
-    // console.log("TEST: " + testMinutes)
-    let futureHours = Math.floor(wait / 60) + nowHours;
-    // console.log("FUTURE: " + futureHours)
-    let futureMinutes = (wait % 60) + nowMinutes;
-    // console.log("FUTURE: " + futureMinutes)
-
-    if((testHours > nowHours
-            || (testHours === nowHours && testMinutes > nowMinutes))
-        && ((testHours < futureHours)
-            || (testHours === futureHours && testMinutes < futureMinutes)))
-    {
-        return true;
-    }
-
-    return false;
+const checkTime = (datetimeToTest, wait) => {
+    let secPerHr = 60;
+    let milliPerSec = 1000;
+    let waitInMilli = wait * secPerHr * milliPerSec;
+    let toTest = new Date(datetimeToTest.year, datetimeToTest.month, datetimeToTest.day,
+                            datetimeToTest.hour, datetimeToTest.minute);
+    // console.log(toTest.toLocaleString());
+    let toTestMilli = toTest.getTime();
+    
+    return toTestMilli > Date.now() && toTestMilli < Date.now() + waitInMilli;
 }
 
-// console.log(checkTime('20:38:00', 30));
+// Test checkTime()
+// timeToTest = {
+//     year: 2021,
+//     month: 2,
+//     day: 26,
+//     hour: 0,
+//     minute: 42
+// };
+    
+// console.log(checkTime(timeToTest, 30));
+// console.log("Done testing checkTime()");
 
+/**
+ * 
+ * @param {*} obj 
+ * @param {*} tripId 
+ * @returns 
+ */
 const containsTrip = (obj, tripId) => {
     let tripTimeA = process.hrtime();
     // console.log(tripId)
@@ -224,7 +251,7 @@ module.exports = {
     addTime,
     to12,
     before,
-    distance,
+    euclideanDistance,
     checkTime,
     containsTrip,
     containsStop,
