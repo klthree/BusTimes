@@ -106,9 +106,37 @@ const before = (timeA, timeB) => {
 // console.log(end[0] + " " + end[1]/1000000);
 // })();
 
+/**
+ * Accepts an Object dateTimeToTest and returns true if the time it specifies falls between 
+ * now and 'wait' minutes from now. Returns false if time is outside that window or undefined.
+ * @param {Object} datetimeToTest - Date and time to test. {year, month, day, hour, minute}
+ * @param {number} wait - Number of minutes
+ * @returns {boolean} - true if time is 
+ */
+ const checkTime = (datetimeToTest, wait) => {
+    let secPerHr = 60;
+    let milliPerSec = 1000;
+    let waitInMilli = wait * secPerHr * milliPerSec;
+    let toTest = new Date(datetimeToTest.year, datetimeToTest.month, datetimeToTest.day,
+                            datetimeToTest.hour, datetimeToTest.minute);
+    // console.log(toTest.toLocaleString());
+    let toTestMilli = toTest.getTime();
+    
+    return toTestMilli > Date.now() && toTestMilli < Date.now() + waitInMilli;
+}
 
-// 
-// returns rough approximation of the distance between those points. Not accurate on larger scale.
+// Test checkTime()
+/*timeToTest = {
+    year: 2021,
+    month: 2,
+    day: 26,
+    hour: 0,
+    minute: 42
+};
+console.log(checkTime(timeToTest, 30));
+console.log("Done testing checkTime()");
+*/
+
 /**
  * Takes two objects with properties lat and lon.
  * 
@@ -162,37 +190,6 @@ const euclideanDistance = (ptA, ptB) => {
 //     let end = process.hrtime(start);
 //     console.log(end[0] + " " + end[1]/1000000);
 // })();
-
-/**
- * Accepts an Object dateTimeToTest and returns true if the time it specifies falls between 
- * now and 'wait' minutes from now. Returns false if time is outside that window or undefined.
- * @param {Object} datetimeToTest - Date and time to test. {year, month, day, hour, minute}
- * @param {number} wait - Number of minutes
- * @returns {boolean} - true if time is 
- */
-const checkTime = (datetimeToTest, wait) => {
-    let secPerHr = 60;
-    let milliPerSec = 1000;
-    let waitInMilli = wait * secPerHr * milliPerSec;
-    let toTest = new Date(datetimeToTest.year, datetimeToTest.month, datetimeToTest.day,
-                            datetimeToTest.hour, datetimeToTest.minute);
-    // console.log(toTest.toLocaleString());
-    let toTestMilli = toTest.getTime();
-    
-    return toTestMilli > Date.now() && toTestMilli < Date.now() + waitInMilli;
-}
-
-// Test checkTime()
-// timeToTest = {
-//     year: 2021,
-//     month: 2,
-//     day: 26,
-//     hour: 0,
-//     minute: 42
-// };
-    
-// console.log(checkTime(timeToTest, 30));
-// console.log("Done testing checkTime()");
 
 /**
  * 
