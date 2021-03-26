@@ -58,13 +58,17 @@ const addTime = (toAdd) => {
 /**
  * Converts a time from 24 hour to 12 hour
  * @param {string} time - as hh:mm:ss
- * @returns {string} current time in 12 hour format, hh:mm:ss
+ * @returns {string, undefined} current time in 12 hour format, hh:mm:ss, or undefined
+ * if the hours segment of the argument provided represents a time greater than or 
+ * equal to 25 hours.
  */
 const to12 = (time) => {
     let hr = time.slice(0, 2);
 
-    if(parseInt(hr) >= 24) {
+    if(parseInt(hr) == 24) {
         time = time.replace(hr, hr % 2);
+    } else if (parseInt(hr) > 24) {
+        return undefined;
     }
     
     const today = new Date(Date.now()).toLocaleDateString();
@@ -72,15 +76,15 @@ const to12 = (time) => {
 }
 
 // TEST: to12
-// (() => {
-//     console.log("\nTesting to12(time):")
-//     let start = process.hrtime();
-//     let result = to12('14:03:59');
-//     let end = process.hrtime(start);
+(() => {
+    console.log("\nTesting to12(time):")
+    let start = process.hrtime();
+    let result = to12('25:38:59');
+    let end = process.hrtime(start);
 
-//     console.log(result);
-//     console.log(end[0] + "s " + end[1]/1000000 + "ms")
-// })();
+    console.log(result);
+    console.log("That took " + end[0] + "s " + end[1]/1000000 + "ms")
+})();
 
 /**
  * 
@@ -227,6 +231,7 @@ const containsTrip = (obj, tripId) => {
     // console.log(tripTimeB);
     return -1;
 }
+
 
 const containsStop = (arr, stopId) => {
     for(let i = 0; i < arr.length; i++) {
