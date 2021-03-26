@@ -12,12 +12,12 @@ const getCoords = async (loc) => {
     }
 }
 
-const processCoords = async () => {
-    let loc = "Pittsburgh PA";
-    let co = await getCoords(loc);
-    console.log(loc + " is at " + co);
-}
-processCoords();
+// const processCoords = async () => {
+//     let loc = "Pittsburgh PA";
+//     let co = await getCoords(loc);
+//     console.log(loc + " is at " + co);
+// }
+// processCoords();
 
 module.exports = {
     getCoords,
