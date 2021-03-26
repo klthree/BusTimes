@@ -56,6 +56,9 @@ const pathfinder = (start, end) => {
 /** Determines whether two routes can be considered adjacent
     to one another. Two routes are considered adjacent if they
     have stops that are within a specified distance of one another.
+    @param {Object} routeA
+    @param {Object} routeB
+    @return {Object} - Array of adjacent stops
 */
 const adjacency = (routeA, routeB) => {
     // if adjacent, return the stops
@@ -84,7 +87,6 @@ const adjacency = (routeA, routeB) => {
     if(stopOptions.length != 0) {
         return stopOptions;
     } else {
-        console.log("uhoh");
         return null;
     }
 }
