@@ -1,7 +1,11 @@
 const fs = require('fs');
+const got = require('got');
 const haversine = require('haversine');
 const ras2 = require ('../data/routes_and_stops2.json');
 const all_stops = require ('../data/all_stops');
+const baseURL = 'http://truetime.portauthority.org/bustime/api/v3';
+const bus_key = require('./keys').busKey;
+
 
 const pathfinder = (start, end) => {
     const near_start = closest_stops(start, all_stops, 5);
@@ -57,7 +61,7 @@ const adjacency = (routeA, routeB) => {
     // if adjacent, return the stops
     // if not, return null
     let acceptable_dist = 0.01;
-    const stopOptions = [];
+    const stopOptions = []; 
 
     // console.log(routeA)
     // console.log(typeof routeA.dir);
@@ -85,60 +89,62 @@ const adjacency = (routeA, routeB) => {
     }
 }
 
-const get_predictions = (stpid, rtid, vid) => {
-    return new Promise((resolve, reject) => {
-        (async () => {            
-            try {
-                const query = "";
-                if(stpid) query = '&stpid=' + stpid;
-                else if(stpid && rtid) query = '&stpid=' + stpid + '&rtid=' + rtid;
-                else if(vid) query = '&vid=' + vid;
-                else return "Invalid arguments";
+const get_predictions = async (stpid, rtid, vid) => {
+    try {
+        const query = "";
+        if(stpid) query = '&stpid=' + stpid;
+        else if(stpid && rtid) query = '&stpid=' + stpid + '&rtid=' + rtid;
+        else if(vid) query = '&vid=' + vid;
+        else return "Invalid arguments";
 
-                const predictURL = baseURL + '/getpredictions?key=' + bus_key
-                        + query + '&format=json&rtpidatafeed=Port%20Authority%20Bus';
-                const response = await got(predictURL);
-                const resp = JSON.parse(response.body);
-                
-                if(resp["bustime-response"].error) {
-                    resolve (resp["bustime-response"].error.msg);
-                }
+        const predictURL = baseURL + '/getpredictions?key=' + bus_key
+                + query + '&format=json&rtpidatafeed=Port%20Authority%20Bus';
+        const response = await got(predictURL);
+        const resp = JSON.parse(response.body);
+        
+        if(resp["bustime-response"].error) {
+            return resp["bustime-response"].error.msg;
+        }
 
-                resolve(resp["bustime-response"].prd);
-            } catch(error) {
-                console.error(error);
-                
-                // throw new Error(error);
-            }
-        })()
-    })
+        return resp["bustime-response"].prd;
+    } catch(error) {
+        console.error(error);
+        
+        // throw new Error(error);
+    }
 }
 
-const get_vehicles = (options) => {
-    return new Promise((resolve, reject) => {
-        (async () => {
-            try {
-                let vehURL = "";
-                if(options.route) {
-                    vehURL = baseURL + '/getvehicles?key=' + bus_key + '&rt='
-                                            + options.route + '&format=json&rtpidatafeed=Port%20Authority%20Bus';
-                } else if(options.vid) {
-                    vehURL = baseURL + '/getvehicles?key=' + bus_key + '&vid='
-                                            + options.vid + '&format=json&rtpidatafeed=Port%20Authority%20Bus';
-                } else {
-                    resolve("Invalid parameters");
-                }
-                const response = await got(vehURL);
-                const resp = JSON.parse(response.body);
-                resolve(resp["bustime-response"].vehicle);
-                
-            } catch(e) {
-                console.error(e);
-            }
-        })();
-    })
+const get_vehicles = async (options) => {
+    try {
+        let vehURL = "";
+        if(options.route) {
+            vehURL = baseURL + '/getvehicles?key=' + bus_key + '&rt='
+                                    + options.route + '&format=json&rtpidatafeed=Port%20Authority%20Bus';
+        } else if(options.vid) {
+            vehURL = baseURL + '/getvehicles?key=' + bus_key + '&vid='
+                                    + options.vid + '&format=json&rtpidatafeed=Port%20Authority%20Bus';
+        } else {
+            resolve("Invalid parameters");
+        }
+        const response = await got(vehURL);
+        const resp = JSON.parse(response.body);
+        
+        return resp["bustime-response"].vehicle;
+    } catch(e) {
+        console.error(e);
+    }
 }
+get_vehicles({route: 6}).then(resp => console.log(resp));
 
+/**
+ * Given a location in latitude and longitude, a list of stops from a JSON file,
+ * and a number top, returns top number of stops closest to the given coordinates.
+ * 
+ * @param {Object} start - Contains latitude and longitude properties.
+ * @param {Object[]} stoplist - Array of Objects from ./data/all_stops.json.
+ * @param {number} top - Number of results to return.
+ * @returns 
+ */
 const closest_stops = (start, stoplist, top) => {
     stoplist.sort((stopA, stopB) => {
         return haversine(start, {latitude: stopA.lat, longitude: stopA.lon})
@@ -149,6 +155,7 @@ const closest_stops = (start, stoplist, top) => {
 
     return {walking_distance: walking_distance, sorted_stops: stoplist.slice(0, top)};
 }
+
 
 let time_convert = (military_time) => {
     if(parseInt(military_time.slice(0, 2)) > 12) {
