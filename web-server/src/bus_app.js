@@ -13,6 +13,10 @@ const views = path.join(__dirname, '../templates/views');
 app.set('view engine', 'pug');
 app.set('views', views);
 
+app.get('/', (req, res) => {
+    res.send("Test");
+})
+
 app.get('/bus', (req, res) => {
     
     const start = {
