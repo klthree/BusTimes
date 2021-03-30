@@ -2,7 +2,10 @@ const fs = require('fs');
 const readline = require('readline');
 const path = require('path');
 const haversine = require('haversine');
+const eDistance = require('./helpers.js').euclideanDistance;
+const PriorityQueue = require('./pq.js').PriorityQueue;
 const all_stops = require ('../data/all_stops.json');
+
 
 const tripsThroughStop = (stpid, wait) => {
     return new Promise((resolve, reject) => {
@@ -110,16 +113,37 @@ const nearestTrips = (start) => {
 // Takes starting coordinates, a complete list of bus stops,
 // and the desired number of stops, and returns 'top' stops
 // nearest the starting coordinates.
-const closest_stops = (start, top) => {4
-    all_stops.sort((stopA, stopB) => {
-        return haversine(start, {latitude: stopA.lat, longitude: stopA.lon})
-            - haversine(start, {latitude: stopB.lat, longitude: stopB.lon})
+const closest_stops = (start, top) => {
+    return new Promise((resolve, reject) => {
+        // console.log(start);
+        const greaterThan = (a, b) => {
+            return haversine({lat: a.split(",")[4].trim(), lon: a.split(",")[5].trim()}, {lat: start.latitude, lon: start.longitude}) - haversine({lat: b.split(",")[4].trim(), lon: b.split(",")[5].trim()}, {lat: start.latitude, lon: start.longitude})
+        }
+        const closestStops = new PriorityQueue(greaterThan, 5);
+        const stopFile = path.join(__dirname, "../data/stops.txt");
+        const stopStream = fs.createReadStream(stopFile);
+        const stopStreamReader = readline.createInterface({input:stopStream});
+        let lineNumber = 0;
+
+        stopStreamReader.on('line', (line) => {
+            if (lineNumber != 0) {
+                closestStops.insert(line);
+            }
+
+            lineNumber++;
+            
+        }).on('close', () => {
+            resolve(closestStops);
+            // return closestStops;
+        })
     })
     
-    let walking_distance = haversine(start, {latitude: all_stops[0].lat, longitude: all_stops[0].lon}, {unit: 'mile'})
+    // let walking_distance = haversine(start, {latitude: all_stops[0].lat, longitude: all_stops[0].lon}, {unit: 'mile'})
 
-    return {walking_distance: walking_distance, sorted_stops: all_stops.slice(0, top)};
+    // return {/*walking_distance: walking_distance, */closestStops};
 }
+
+
 
 const isCloseTo = (ptA, ptB, accDist) => {
     return haversine(ptA, ptB) <= accDist;
@@ -250,7 +274,7 @@ const ptB = {
     longitude: -79.991610
 }
 
-nearestTrips(ptA).then(t => console.log('hit' + t));
+// nearestTrips(ptA).then(t => console.log('hit' + t));
 // let time = '16:16:00';
 // const event = new Date('August 19, 1975 23:15:30');
 // let now = new Date(Date.now());
@@ -285,3 +309,7 @@ nearestTrips(ptA).then(t => console.log('hit' + t));
 // console.log(lastTime);
 
 // console.log(end.getTime());
+
+module.exports = {
+    closest_stops,
+}
