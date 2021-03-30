@@ -56,6 +56,9 @@ const pathfinder = (start, end) => {
 /** Determines whether two routes can be considered adjacent
     to one another. Two routes are considered adjacent if they
     have stops that are within a specified distance of one another.
+    @param {Object} routeA
+    @param {Object} routeB
+    @return {Object} - Array of adjacent stops
 */
 const adjacency = (routeA, routeB) => {
     // if adjacent, return the stops
@@ -84,7 +87,6 @@ const adjacency = (routeA, routeB) => {
     if(stopOptions.length != 0) {
         return stopOptions;
     } else {
-        console.log("uhoh");
         return null;
     }
 }
@@ -134,26 +136,25 @@ const get_vehicles = async (options) => {
         console.error(e);
     }
 }
-get_vehicles({route: 6}).then(resp => console.log(resp));
+// get_vehicles({route: 6}).then(resp => console.log(resp));
 
 /**
  * Given a location in latitude and longitude, a list of stops from a JSON file,
  * and a number top, returns top number of stops closest to the given coordinates.
  * 
  * @param {Object} start - Contains latitude and longitude properties.
- * @param {Object[]} stoplist - Array of Objects from ./data/all_stops.json.
  * @param {number} top - Number of results to return.
  * @returns 
  */
-const closest_stops = (start, stoplist, top) => {
-    stoplist.sort((stopA, stopB) => {
+const closest_stops = (start, top) => {
+    all_stops.sort((stopA, stopB) => {
         return haversine(start, {latitude: stopA.lat, longitude: stopA.lon})
             - haversine(start, {latitude: stopB.lat, longitude: stopB.lon})
     })
     
-    let walking_distance = haversine(start, {latitude: stoplist[0].lat, longitude: stoplist[0].lon}, {unit: 'mile'})
+    let walking_distance = haversine(start, {latitude: all_stops[0].lat, longitude: all_stops[0].lon}, {unit: 'mile'})
 
-    return {walking_distance: walking_distance, sorted_stops: stoplist.slice(0, top)};
+    return {walking_distance: walking_distance, sorted_stops: all_stops.slice(0, top)};
 }
 
 
