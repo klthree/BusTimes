@@ -1,0 +1,39 @@
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.content {
+    flex-grow: 1;
+}
+
+#loc-search {
+    margin-left: 75px;
+}
+#results {
+    font-weight: 500;
+    margin-left: 75px;
+    padding-top: 10px;
+}
+
+label {
+    font-size:1.7em;
+    padding-right: 10px;
+}
+
+.footer {
+    background-color: #A8E7F4;
+    border-top: 1px solid;
+    border-color: #A8E7F4;
+    /* position: fixed; */
+}
+
+h1 {
+    text-align: center;
+    color: #363c47;
+}
+
+.navbar {
+    background-color: #A8E7F4;
+}
