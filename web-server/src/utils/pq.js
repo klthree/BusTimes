@@ -1,7 +1,7 @@
 class PriorityQueue {
     
     constructor(...args) {
-        this.q = [null];
+        this.q = [];
 
         for(let i = 0; i < args.length; i++) {
             if(typeof args[i] === 'number') {
@@ -10,6 +10,7 @@ class PriorityQueue {
                 this.size = args[i];
             } else if(typeof args[i] === 'function') {
                 // if(this.distSet) throw "Error: cannot set distance and number of results";
+                // console.log(args[i].toString());
                 this.compSet = true;
                 this.greaterThan = args[i];
             } 
@@ -35,12 +36,17 @@ class PriorityQueue {
     }
 
     insert(value) {
-        if(this.lenSet && this.q.length === this.size + 1) {
-            if(this.greaterThan(value, this.q[1])) {
+        if(this.lenSet && this.q.length === this.size) {
+            if(this.greaterThan(value, this.q[0])) {
                 return;
             }
-            this.q[1] = value
-            this.sink(1);
+            // console.log("This stop is closer:");
+            // console.log(value);
+            // console.log("New pq:");
+            // console.log(this);
+
+            this.q[0] = value
+            this.sink(0);
             return;
         }
         this.q.push(value);
