@@ -5,7 +5,7 @@ const geocodeSvc = forwardGeocodeClient({accessToken: mapkey});
 const getCoords = async (loc) => {
     try {
         let response = await geocodeSvc.forwardGeocode({query: loc, limit: 1}).send();
-        // console.log(response);
+        // console.log(typeof response.body.features[0].center);
         return response.body.features[0].center;
     } catch (error) {
         console.error(error);
