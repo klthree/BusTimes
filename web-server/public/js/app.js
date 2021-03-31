@@ -1,7 +1,7 @@
 const coordForm = document.querySelector('#loc-search');
 const search = document.querySelector('input');
 const coords = document.querySelector('#results');
-// document.querySelector('')
+
 coordForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const place = search.value;
