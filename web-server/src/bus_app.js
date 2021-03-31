@@ -28,16 +28,12 @@ app.get('/bus', (req, res) => {
             //     longitude: result[0]
             // }, 5);
             // console.log(stops);
-
             res.send({
+                // error: error,
                 coordinates: result,
             })
-
-
-
         })
-    } 
-    else {
+    } else {
         res.render('bus', {
             title: 'Homepage',
             message: 'Enter Location:'

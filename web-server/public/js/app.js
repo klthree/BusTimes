@@ -8,9 +8,13 @@ coordForm.addEventListener('submit', (e) => {
 
     fetch('http://localhost:3000/bus?loc=' + place).then((response) => {
         response.json().then((data) => {
-            let latitude = data.coordinates[1];
-            let longitude = data.coordinates[0];
-            coords.textContent = "Coordinates: " + latitude + ", " + longitude;
+            if (typeof data.coordinates === 'string') {
+                coords.textContent = data.coordinates;
+            } else {
+                let latitude = data.coordinates[1];
+                let longitude = data.coordinates[0];
+                coords.textContent = "Coordinates: " + latitude + ", " + longitude;
+            }
         })
     })
 })
