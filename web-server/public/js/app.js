@@ -1,18 +1,20 @@
 const coordForm = document.querySelector('#loc-search');
 const search = document.querySelector('input');
+const coords = document.querySelector('#results');
 // document.querySelector('')
 coordForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const place = search.value;
-    // console.log(place);
+    console.log(place);
     // window.open('http://localhost:3000/bus?loc=' + place, "_self");
 
     fetch('http://localhost:3000/bus?loc=' + place).then((response) => {
-        console.log(response);
-        // response.json().then((data) => {
-        //     console.log("testy");
-        //     console.log(data);
-        // })
+        response.json().then((data) => {
+            console.log(data);
+            let latitude = data.coordinates[1];
+            let longitude = data.coordinates[0];
+            coords.textContent = "Coordinates: " + latitude + ", " + longitude;
+        })
     })
 })
 

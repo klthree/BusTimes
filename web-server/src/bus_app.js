@@ -30,20 +30,14 @@ app.get('/bus', (req, res) => {
         getCoords(req.query.loc) 
         .then(async (result) => {
             console.log(result);
-            let stops = await cvs_utils.closest_stops({
-                latitude: result[1],
-                longitude: result[0]
-            }, 5);
-            console.log(stops);
+            // let stops = await cvs_utils.closest_stops({
+            //     latitude: result[1],
+            //     longitude: result[0]
+            // }, 5);
+            // console.log(stops);
 
-            res.render('bus', {
-                title: "Home Page",
-                message: 'Enter Location:',
-                coords: "Coordinates: " + result[0] + ", " + result[1],
-                // stops: "And your 5 closest bus stops are " + cvs_utils.closest_stops({
-                //     latitude: result[0],
-                //     longitude: result[1]
-                // }, 5)[0]
+            res.send({
+                coordinates: result,
             })
 
 
