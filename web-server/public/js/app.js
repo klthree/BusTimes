@@ -6,7 +6,6 @@ coordForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const place = search.value;
     console.log(place);
-    // window.open('http://localhost:3000/bus?loc=' + place, "_self");
 
     fetch('http://localhost:3000/bus?loc=' + place).then((response) => {
         response.json().then((data) => {
@@ -17,9 +16,3 @@ coordForm.addEventListener('submit', (e) => {
         })
     })
 })
-
-// fetch('http://localhost:3000/?loc=pittsburgh').then((response) => {
-//     response.json().then((data) => {
-//         console.log(data);
-//     })
-// })
