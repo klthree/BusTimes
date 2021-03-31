@@ -1,14 +1,7 @@
-const fs = require('fs');
 const path = require('path');
 const express = require('express');
 // const expressValidator = require('express-validator');
-const init = require('./utils/init');
 const getCoords = require('./utils/geocoder.js').getCoords;
-const process = require('./utils/process');
-const cvs_utils = require('./utils/csv_util');
-
-const ras = require ('./data/routes_and_stops2.json')
-const all_stops = require ('./data/all_stops.json');
 
 const app = express();
 
