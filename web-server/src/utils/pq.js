@@ -11,7 +11,7 @@ class PriorityQueue {
      * @param  {...(number|function)} args [number size=5] [function greaterThan=(a, b) => return a - b > 0]
      */
     constructor(...args) {
-        this.q = [null];
+        this.q = [];
         this.lenSet = false;
         this.size = 0;
         this.compareFuncSet = false;
@@ -44,13 +44,13 @@ class PriorityQueue {
     }
 
     insert(value) {
-        if(this.q.length === this.size + 1) {
-            if(this.greaterThan(value, this.q[1])) {
+        if(this.q.length === this.size) {
+            if(this.greaterThan(value, this.q[0])) {
                 return;
             }
 
-            this.q[1] = value
-            this.sink(1);
+            this.q[0] = value
+            this.sink(0);
 
             return;
         }
@@ -73,7 +73,7 @@ class PriorityQueue {
     }
 
     swim(k) {
-        while(k > 1 && this.greaterThan(this.q[k], this.q[Math.floor(k/2)])) {
+        while(k > 0 && this.greaterThan(this.q[k], this.q[Math.floor(k/2)])) {
             console.log("Swimming " + this.q[k]);
             this.exch(k, Math.floor(k/2));
             k = Math.floor(k/2);
@@ -81,8 +81,14 @@ class PriorityQueue {
     }
 
     sink(k) {
-        while(2 * k + 1 < this.q.length) {
-            let g = this.greater(2 * k, 2 * k + 1);
+        let g = 0;
+        while(2 * k < this.q.length) {
+            if (2 * k + 1 >= this.q.length) {
+                g = 2 * k;
+            } else {
+                g = this.greater(2 * k, 2 * k + 1);
+            }
+
             if(this.greaterThan(this.q[g], this.q[k])) {
                 this.exch(k, g);
             } else {
@@ -101,33 +107,33 @@ class PriorityQueue {
 }
 
 // Test
-// let testDataSize = 30;
-// let max = 500;
-// let testData = [];
+let testDataSize = 30;
+let max = 500;
+let testData = [];
 
-// const generateData = (size) => {
-//     for (let i = 0; i < size; i++) {
-//         testData.push(Math.floor(Math.random() * max));
-//     }
-// }
+const generateData = (size) => {
+    for (let i = 0; i < size; i++) {
+        testData.push(Math.floor(Math.random() * max));
+    }
+}
 
-// generateData(testDataSize);
-// console.log(testData);
-let testData = [
-    250, 302, 406, 112, 271, 267,  30,
-     90, 450, 282, 313, 416, 248, 318,
-    271, 412, 275, 261,  35, 396, 271,
-    298,  99, 498, 123, 214, 294, 306,
-    388, 282
-  ]
-let pq = new PriorityQueue(5);
+generateData(testDataSize);
+console.log(testData);
+// let testData = [
+//     250, 302, 406, 112, 271, 267,  30,
+//      90, 450, 282, 313, 416, 248, 318,
+//     271, 412, 275, 261,  35, 396, 271,
+//     298,  99, 498, 123, 214, 294, 306,
+//     388, 282
+//   ]
+let pq = new PriorityQueue();
 
 for (let i = 0; i < testData.length; i++) {
-    console.log("Inserting " + testData[i]);
-    console.log(pq.get_q());
+    // console.log("Inserting " + testData[i]);
+    // console.log(pq.get_q());
     pq.insert(testData[i]);
-    console.log(pq.get_q());
-    console.log();
+    // console.log(pq.get_q());
+    // console.log();
 }
 console.log(pq);
 
