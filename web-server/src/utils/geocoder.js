@@ -10,13 +10,13 @@ const geocodeSvc = forwardGeocodeClient({accessToken: mapkey});
  */
 const getCoords = async (loc) => {
     try {
-        console.log("In getCoords, loc = " + loc);
+        // console.log("In getCoords, loc = " + loc);
         let response = await geocodeSvc.forwardGeocode({query: loc, limit: 1}).send();
         if (response.body.features.length == 0) {
             return "Error: Invalid placename";
         } else {
             let coordinates = {lat: response.body.features[0].center[1], lon: response.body.features[0].center[0]}
-            console.log("In getCoords, result = " + coordinates.lat + ", " + coordinates.lon);
+            // console.log("In getCoords, result = " + coordinates.lat + ", " + coordinates.lon);
             return coordinates;
 
         }
