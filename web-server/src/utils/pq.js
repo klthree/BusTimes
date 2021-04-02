@@ -108,17 +108,17 @@ class PriorityQueue {
 }
 
 // Test
-let testDataSize = 30;
-let max = 500;
-let testData = [];
+// let testDataSize = 30;
+// let max = 500;
+// let testData = [];
 
-const generateData = (size) => {
-    for (let i = 0; i < size; i++) {
-        testData.push(Math.floor(Math.random() * max));
-    }
-}
+// const generateData = (size) => {
+//     for (let i = 0; i < size; i++) {
+//         testData.push(Math.floor(Math.random() * max));
+//     }
+// }
 
-generateData(testDataSize);
+// generateData(testDataSize);
 
 // testData = [
 //     250, 302, 406, 112, 271, 267,  30,
@@ -127,12 +127,12 @@ generateData(testDataSize);
 //     298,  99, 498, 123, 214, 294, 306,
 //     388, 282
 //   ]
-console.log(testData);
-let pq = new PriorityQueue();
+// console.log(testData);
+// let pq = new PriorityQueue();
 
-for (let i = 0; i < testData.length; i++) {
-    pq.insert(testData[i]);
-}
-console.log(pq);
+// for (let i = 0; i < testData.length; i++) {
+//     pq.insert(testData[i]);
+// }
+// console.log(pq);
 
 module.exports.PriorityQueue = PriorityQueue;
