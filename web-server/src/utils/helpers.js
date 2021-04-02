@@ -47,16 +47,16 @@ const euclideanDistance = (ptA, ptB) => {
 // TEST: euclideanDistance
 // (() => {
 //     console.log("\nTesting distance(ptA, ptB):");
-//     const ptA = {
+//     const A = {
 //         lat: 40.444384,
 //         lon: -80.000594
 //     }
-//     const ptB = {
+//     const B = {
 //         lat: 40.463034,
 //         lon: -79.991610
 //     }
 //     let start = process.hrtime();
-//     console.log(distance(ptA, ptB));
+//     console.log(typeof euclideanDistance(A, B));
 //     let end = process.hrtime(start);
 //     console.log(end[0] + " " + end[1]/1000000);
 // })();
