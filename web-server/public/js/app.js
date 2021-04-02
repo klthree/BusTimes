@@ -1,6 +1,9 @@
+// const { closest_stops } = require("../../src/utils/csv_util");
+
 const coordForm = document.querySelector('#loc-search');
 const search = document.querySelector('input');
 const coords = document.querySelector('#results');
+const stops = document.querySelector('#closestStops');
 
 coordForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -8,12 +11,23 @@ coordForm.addEventListener('submit', (e) => {
 
     fetch('http://localhost:3000/bus?loc=' + place).then((response) => {
         response.json().then((data) => {
+            console.log(data);
             if (typeof data.coordinates === 'string') {
                 coords.textContent = data.coordinates;
             } else {
                 let latitude = data.coordinates[1];
                 let longitude = data.coordinates[0];
+                let topStops = "";
                 coords.textContent = "Coordinates: " + latitude + ", " + longitude;
+                console.log("Your " + data.stops.length + " closest stops:");
+
+                stops.innerHTML = "";
+                for (let i = 0; i < data.stops.length; i++) {
+                    let toInsert = '<p>' + data.stops[i][0] + '</p>';
+                    stops.insertAdjacentHTML("afterbegin", toInsert);
+                }
+
+                console.log(topStops);
             }
         })
     })
