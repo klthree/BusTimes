@@ -11,7 +11,7 @@ class PriorityQueue {
      * @param  {...(number|function)} args [number size=5] [function greaterThan=(a, b) => return a - b > 0]
      */
     constructor(...args) {
-        this.q = [];
+        this.q = [null];
         this.lenSet = false;
         this.size = 0;
         this.compareFuncSet = false;
@@ -20,7 +20,7 @@ class PriorityQueue {
         for(let i = 0; i < args.length; i++) {
             if(typeof args[i] === 'number') {
                 this.lenSet = true;
-                this.size = args[i];
+                this.size = args[i] + 1;
             } else if(typeof args[i] === 'function') {
                 this.compareFuncSet = true;
                 this.greaterThan = args[i];
@@ -45,24 +45,26 @@ class PriorityQueue {
 
     insert(value) {
         if(this.q.length === this.size) {
-            if(this.greaterThan(value, this.q[0])) {
+            if(this.greaterThan(value, this.q[1])) {
                 return;
             }
 
-            this.q[0] = value
-            this.sink(0);
+            this.q[1] = value
+            this.sink(1);
 
             return;
         }
 
         this.q.push(value);
+        // Debugging console
+        console.log(this.q);
         this.swim(this.q.length - 1);
     }
 
     delMax() {
-        this.exch(0, this.q.length - 1);
+        this.exch(1, this.q.length - 1);
         let max = this.q.splice(this.q.length - 1);
-        this.sink(0);
+        this.sink(1);
         return max;
     }
 
@@ -73,8 +75,7 @@ class PriorityQueue {
     }
 
     swim(k) {
-        while(k > 0 && this.greaterThan(this.q[k], this.q[Math.floor(k/2)])) {
-            console.log("Swimming " + this.q[k]);
+        while(k > 1 && this.greaterThan(this.q[k], this.q[Math.floor(k/2)])) {
             this.exch(k, Math.floor(k/2));
             k = Math.floor(k/2);
         }
@@ -107,34 +108,31 @@ class PriorityQueue {
 }
 
 // Test
-// let testDataSize = 30;
-// let max = 500;
-// let testData = [];
+let testDataSize = 30;
+let max = 500;
+let testData = [];
 
-// const generateData = (size) => {
-//     for (let i = 0; i < size; i++) {
-//         testData.push(Math.floor(Math.random() * max));
-//     }
-// }
+const generateData = (size) => {
+    for (let i = 0; i < size; i++) {
+        testData.push(Math.floor(Math.random() * max));
+    }
+}
 
-// generateData(testDataSize);
-// console.log(testData);
-// // let testData = [
-// //     250, 302, 406, 112, 271, 267,  30,
-// //      90, 450, 282, 313, 416, 248, 318,
-// //     271, 412, 275, 261,  35, 396, 271,
-// //     298,  99, 498, 123, 214, 294, 306,
-// //     388, 282
-// //   ]
-// let pq = new PriorityQueue();
+generateData(testDataSize);
 
-// for (let i = 0; i < testData.length; i++) {
-//     // console.log("Inserting " + testData[i]);
-//     // console.log(pq.get_q());
-//     pq.insert(testData[i]);
-//     // console.log(pq.get_q());
-//     // console.log();
-// }
-// console.log(pq);
+// testData = [
+//     250, 302, 406, 112, 271, 267,  30,
+//      90, 450, 282, 313, 416, 248, 318,
+//     271, 412, 275, 261,  35, 396, 271,
+//     298,  99, 498, 123, 214, 294, 306,
+//     388, 282
+//   ]
+console.log(testData);
+let pq = new PriorityQueue();
+
+for (let i = 0; i < testData.length; i++) {
+    pq.insert(testData[i]);
+}
+console.log(pq);
 
 module.exports.PriorityQueue = PriorityQueue;
