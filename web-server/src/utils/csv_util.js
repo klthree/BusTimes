@@ -110,20 +110,23 @@ const nearestTrips = (start) => {
     return Promise.all(tripArray);
 }
 
-// Takes starting coordinates, a complete list of bus stops,
-// and the desired number of stops, and returns 'top' stops
-// nearest the starting coordinates.
+/**
+ * Given a location, obtains starting coordinates with getCoords, and returns a list
+ * of the 'top' closest transit stops.
+ * 
+ * @param {string} start - location name.
+ * @param {number} top - number of stop names to return.
+ * @returns {promise} - object containing 'q', priority q with list of closest stops.
+ */
 const closest_stops = (start, top) => {
     return new Promise(async (resolve, reject) => {
-        let rawCoords = await getCoords(start);
+        let startCoords = await getCoords(start);
+        console.log(startCoords.lat + " " + startCoords.lon);
         let splitter = ",";
         let latPos = 4;
         let lonPos = 5;
         let standardLen = 7;
-        let startCoords = {
-            lat: rawCoords[1],
-            lon: rawCoords[0]
-        }
+
         const greaterThan = (a, b) => {
             let aSplit = a.split(splitter);
             let bSplit = b.split(splitter);
@@ -138,7 +141,7 @@ const closest_stops = (start, top) => {
             return distToA > distToB; 
         }
         
-        const closestStops = new PriorityQueue(greaterThan, top, startCoords);
+        const closestStops = new PriorityQueue(greaterThan, top);
         const stopFile = path.join(__dirname, "../data/stops.txt");
         const stopStream = fs.createReadStream(stopFile);
         const stopStreamReader = readline.createInterface({input:stopStream});
@@ -158,24 +161,14 @@ const closest_stops = (start, top) => {
     })
     
     // let walking_distance = haversine(start, {latitude: all_stops[0].lat, longitude: all_stops[0].lon}, {unit: 'mile'})
-
-    // return {/*walking_distance: walking_distance, */closestStops};
 }
 
-(async () => {
-    let place1 = "1241 haslage ave";
-    let place2 = "General Robinson 15221";
-    // console.log(await getCoords(place1));
-    // let rawCoords = await getCoords(place1);
-    // let coords = {lat: rawCoords[1], lon: rawCoords[0]};
-    let stops = await closest_stops(place1, 5);
-    console.log(stops);
-
-    // for (let i = 1; i < stops.q.length; i++) {
-
-    //     console.log("Distance: " + eDistance({lat: stops.q[i].split(splitter)[4], lon: stops.q[i].split(splitter)[5]}, coords));
-    // }
-})();
+// Testing for closest_stops()
+// (async () => {
+//     let place1 = "General Robinson st 15212";
+//     let stops = await closest_stops(place1, 5);
+//     console.log(stops);
+// })();
 
 const isCloseTo = (ptA, ptB, accDist) => {
     return haversine(ptA, ptB) <= accDist;
@@ -286,15 +279,6 @@ const valid = (scheduled, wait) => {
 //             console.log(key);
 //         }
 // }).catch(err => console.log(err));
-
-const ptA = {
-    latitude: 40.444384,
-    longitude: -80.000594
-}
-const ptB = {
-    latitude: 40.463034,
-    longitude: -79.991610
-}
 
 // nearestTrips(ptA).then(t => console.log('hit' + t));
 // let time = '16:16:00';

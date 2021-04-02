@@ -36,7 +36,7 @@ class PriorityQueue {
             this.compareFuncSet = true;
         }
         if(!this.lenSet) {
-            this.size = 5;
+            this.size = 6;
             this.lenSet = true;
         }
     }

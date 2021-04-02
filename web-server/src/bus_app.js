@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 // const expressValidator = require('express-validator');
 const getCoords = require('./utils/geocoder.js').getCoords;
+const closestStops = require('./utils/csv_util').closest_stops;
 
 const app = express();
 
@@ -23,14 +24,18 @@ app.get('/bus', (req, res) => {
         getCoords(req.query.loc) 
         .then(async (result) => {
             console.log(result);
-            // let stops = await cvs_utils.closest_stops({
-            //     latitude: result[1],
-            //     longitude: result[0]
-            // }, 5);
-            // console.log(stops);
+            let stops = await closestStops(req.query.loc, 5);
+            stops = stops.get_q();
+            let stopNames = [];
+            for (let i = 1; i < stops.length; i++) {
+                stopNames.push(stops[i].match(/\".*\"/));
+            }
+
+            console.log(stopNames);
             res.send({
                 // error: error,
                 coordinates: result,
+                stops: stopNames
             })
         })
     } else {
