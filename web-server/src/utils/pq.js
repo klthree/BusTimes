@@ -3,6 +3,7 @@
     is either supplied by the user or defaults to 5.
     Implementation adapted from 
 */
+// const distance = require('./helpers.js').euclideanDistance;
 
 class PriorityQueue {
     /**
@@ -16,6 +17,7 @@ class PriorityQueue {
         this.size = 0;
         this.compareFuncSet = false;
         this.greaterThan = null;
+        this.start = null;
 
         for(let i = 0; i < args.length; i++) {
             if(typeof args[i] === 'number') {
@@ -48,7 +50,15 @@ class PriorityQueue {
             if(this.greaterThan(value, this.q[1])) {
                 return;
             }
+            // console.log("Inserting " + value)
+            // console.log("Current state:");
+            // console.log(this.get_q());
 
+            // console.log("Distance between " + this.q[1] + " and " + this.start + ":");
+            // console.log(distance({lat: this.q[1].split(/(?<!\".*),(?!.*\")/)[4], lon: this.q[1].split(/(?<!\".*),(?!.*\")/)[5]}, this.start));
+            // console.log("Distance between " + value + " and " + this.start + ":");
+            // console.log(value + " is at " + value.split(/(?<!\".*),(?!.*\")/)[4] + ", " + value.split(/(?<!\".*),(?!.*\")/)[5]);
+            // console.log(distance({lat: value.split(/(?<!\".*),(?!.*\")/)[4], lon: value.split(/(?<!\".*),(?!.*\")/)[5]}, this.start));
             this.q[1] = value
             this.sink(1);
 
@@ -57,7 +67,7 @@ class PriorityQueue {
 
         this.q.push(value);
         // Debugging console
-        console.log(this.q);
+        // console.log(this.q);
         this.swim(this.q.length - 1);
     }
 
@@ -95,6 +105,7 @@ class PriorityQueue {
             } else {
                 break;
             }
+
             k = g;
         }
     }
