@@ -11,6 +11,11 @@ body {
 #loc-search {
     margin-left: 75px;
 }
+
+#closestStops {
+    border: 5px solid rgb(138, 138, 240);
+}
+
 #results {
     font-weight: 500;
     margin-left: 75px;
