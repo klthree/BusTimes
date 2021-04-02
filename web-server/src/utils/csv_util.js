@@ -5,7 +5,7 @@ const haversine = require('haversine');
 const eDistance = require('./helpers.js').euclideanDistance;
 const PriorityQueue = require('./pq.js').PriorityQueue;
 const all_stops = require ('../data/all_stops.json');
-
+const getCoords = require('./geocoder.js').getCoords;
 
 const tripsThroughStop = (stpid, wait) => {
     return new Promise((resolve, reject) => {
@@ -114,27 +114,46 @@ const nearestTrips = (start) => {
 // and the desired number of stops, and returns 'top' stops
 // nearest the starting coordinates.
 const closest_stops = (start, top) => {
-    return new Promise((resolve, reject) => {
-        // console.log(start);
-        const greaterThan = (a, b) => {
-            return haversine({lat: a.split(",")[4].trim(), lon: a.split(",")[5].trim()}, {lat: start.latitude, lon: start.longitude}) - haversine({lat: b.split(",")[4].trim(), lon: b.split(",")[5].trim()}, {lat: start.latitude, lon: start.longitude})
+    return new Promise(async (resolve, reject) => {
+        let rawCoords = await getCoords(start);
+        let splitter = ",";
+        let latPos = 4;
+        let lonPos = 5;
+        let standardLen = 7;
+        let startCoords = {
+            lat: rawCoords[1],
+            lon: rawCoords[0]
         }
-        const closestStops = new PriorityQueue(greaterThan, 5);
+        const greaterThan = (a, b) => {
+            let aSplit = a.split(splitter);
+            let bSplit = b.split(splitter);
+            aLatPos = latPos + aSplit.length - standardLen;
+            aLonPos = lonPos + aSplit.length - standardLen;
+            bLatPos = latPos + bSplit.length - standardLen;
+            bLonPos = lonPos + bSplit.length - standardLen;
+
+            let distToA = eDistance({lat: aSplit[aLatPos], lon: aSplit[aLonPos]}, startCoords);
+            let distToB = eDistance({lat: bSplit[bLatPos], lon: bSplit[bLonPos]}, startCoords);
+
+            return distToA > distToB; 
+        }
+        
+        const closestStops = new PriorityQueue(greaterThan, top, startCoords);
         const stopFile = path.join(__dirname, "../data/stops.txt");
         const stopStream = fs.createReadStream(stopFile);
         const stopStreamReader = readline.createInterface({input:stopStream});
         let lineNumber = 0;
 
         stopStreamReader.on('line', (line) => {
+            // let min = 1;
             if (lineNumber != 0) {
                 closestStops.insert(line);
+                // console.log();
             }
 
             lineNumber++;
-            
         }).on('close', () => {
             resolve(closestStops);
-            // return closestStops;
         })
     })
     
@@ -143,7 +162,20 @@ const closest_stops = (start, top) => {
     // return {/*walking_distance: walking_distance, */closestStops};
 }
 
+(async () => {
+    let place1 = "1241 haslage ave";
+    let place2 = "General Robinson 15221";
+    // console.log(await getCoords(place1));
+    // let rawCoords = await getCoords(place1);
+    // let coords = {lat: rawCoords[1], lon: rawCoords[0]};
+    let stops = await closest_stops(place1, 5);
+    console.log(stops);
 
+    // for (let i = 1; i < stops.q.length; i++) {
+
+    //     console.log("Distance: " + eDistance({lat: stops.q[i].split(splitter)[4], lon: stops.q[i].split(splitter)[5]}, coords));
+    // }
+})();
 
 const isCloseTo = (ptA, ptB, accDist) => {
     return haversine(ptA, ptB) <= accDist;
@@ -234,16 +266,6 @@ const routeShortToId = rsn => {
             reject("Route not found");
         })
     })
-}
-
-const addTime = (toAdd) => {
-    let msps = 1000;
-    let spm = 60;
-    let current = new Date(Date.now());
-    let msAdd = toAdd * spm * msps;
-    let future = current.getTime() + msAdd;
-    
-    return (current.getTime() + msAdd);
 }
 
 const valid = (scheduled, wait) => {
