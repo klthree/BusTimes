@@ -148,10 +148,8 @@ const closest_stops = (start, top) => {
         let lineNumber = 0;
 
         stopStreamReader.on('line', (line) => {
-            // let min = 1;
             if (lineNumber != 0) {
                 closestStops.insert(line);
-                // console.log();
             }
 
             lineNumber++;

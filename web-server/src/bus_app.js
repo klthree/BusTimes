@@ -20,18 +20,16 @@ app.get('/', (req, res) => {
 
 app.get('/bus', (req, res) => {
     if (req.query.loc) {
-        console.log(req.query.loc);
         getCoords(req.query.loc) 
         .then(async (result) => {
-            console.log(result);
             let stops = await closestStops(req.query.loc, 5);
             stops = stops.get_q();
             let stopNames = [];
+            
             for (let i = 1; i < stops.length; i++) {
                 stopNames.push(stops[i].match(/\".*\"/));
             }
 
-            console.log(stopNames);
             res.send({
                 coordinates: result,
                 stops: stopNames
