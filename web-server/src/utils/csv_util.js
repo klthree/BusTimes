@@ -6,7 +6,16 @@ const eDistance = require('./helpers.js').euclideanDistance;
 const PriorityQueue = require('./pq.js').PriorityQueue;
 const all_stops = require ('../data/all_stops.json');
 const getCoords = require('./geocoder.js').getCoords;
+const addTime = require('./dateTimeHelpers').addTime;
 
+/**
+ * For a given stop, returns the trips through that stop between the current time
+ * and 'wait' minutes in the future.
+ * 
+ * @param {string} stpid 
+ * @param {number} wait
+ * @returns {object}
+ */
 const tripsThroughStop = (stpid, wait) => {
     return new Promise((resolve, reject) => {
         let stopTimes = fs.createReadStream(path.join(__dirname, '../data/stop_times.txt'));
@@ -39,12 +48,20 @@ const tripsThroughStop = (stpid, wait) => {
             if(trips.length === 1) {
                 reject("Stop " + stpid + " does not exist");
             } else {
+                if (Object.keys(trips).length === 1) {
+                    trips.noTrips = "No upcoming trips. Try a different time frame?";
+                }
                 resolve(trips);
             }
         });
         return trips;
     })
 }
+
+// (async () => {
+//     console.log(await tripsThroughStop("N70015", 60 * 20));
+// })();
+
 
 // Accepts a route_id and returns an array of trip_id's
 const tripsPerRoute = rtId => {
@@ -91,25 +108,6 @@ const adjacency = (tripA, tripB) => {
 
 }
 
-const nearestTrips = (start) => {
-    let closestStops = closest_stops(start, 5);
-    let tripArray = [];
-
-    (closestStops.sorted_stops).map(stop => {
-        stopCodeToId(stop.stpid)
-            .then(stpcd => tripsThroughStop(stpcd, 10))
-            .then(trips => {
-                tripArray.push(trips);
-                return tripArray;
-            })
-            .then(result => {if(result.length === (closestStops.sorted_stops).length){console.log(result)}});
-            console.log(Promise.all(tripArray))
-    })
-    // let x = Promise.all(tripArray);  
-    // console.log(x)  
-    return Promise.all(tripArray);
-}
-
 /**
  * Given a location, obtains starting coordinates with getCoords, and returns a list
  * of the 'top' closest transit stops.
@@ -118,7 +116,7 @@ const nearestTrips = (start) => {
  * @param {number} top - number of stop names to return.
  * @returns {promise} - object containing 'q', priority q with list of closest stops.
  */
-const closest_stops = (start, top) => {
+ const closest_stops = (start, top) => {
     return new Promise(async (resolve, reject) => {
         let locData = await getCoords(start);
         let startCoords = locData.coordinates;
@@ -170,6 +168,29 @@ const closest_stops = (start, top) => {
 //     let stops = await closest_stops(place1, 5);
 //     console.log(stops);
 // })();
+
+const nearestTrips = async (start) => {
+    let closestStops = await closest_stops(start, 5);
+    let tripArray = [];
+
+    (closestStops.sorted_stops).map(stop => {
+        stopCodeToId(stop.stpid)
+            .then(stpcd => tripsThroughStop(stpcd, 10))
+            .then(trips => {
+                tripArray.push(trips);
+                return tripArray;
+            })
+            .then(result => {if(result.length === (closestStops.sorted_stops).length){console.log(result)}});
+            console.log(Promise.all(tripArray))
+    })
+    // let x = Promise.all(tripArray);  
+    // console.log(x)  
+    return Promise.all(tripArray);
+}
+(async () => {
+    let nTrips = await nearestTrips("1241 Haslage Ave");
+    console.log(nTrips);
+})();
 
 const isCloseTo = (ptA, ptB, accDist) => {
     return haversine(ptA, ptB) <= accDist;
