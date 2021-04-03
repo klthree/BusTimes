@@ -8,7 +8,43 @@ const all_stops = require ('../data/all_stops.json');
 const getCoords = require('./geocoder.js').getCoords;
 const addTime = require('./dateTimeHelpers').addTime;
 const stringifyBoolean = require('@mapbox/mapbox-sdk/services/service-helpers/stringify-booleans');
+const { resolve } = require('path');
 
+const routeIdFromTripId = (tripId) => {
+    return new Promise((resolve, reject) => {
+        let trip = {};
+        let trips = fs.createReadStream(path.join(__dirname, '../data/trips.txt'));
+        let tripStream = readline.createInterface(
+            {
+                input: trips
+            }
+        )
+
+        tripStream.on("line", line => {
+            let lineArr = line.split(",");
+
+            if (lineArr[2] === tripId) {
+                // console.log("Route found");
+                trip = {
+                    route: lineArr[0],
+                    headsign: lineArr[3]
+                }
+            }
+        }).on("close", () => {
+            if (trip.route != undefined) {
+                resolve(trip);
+            } else {
+                reject("No route could be found that matches that trip.");
+            }
+        })
+    })
+}
+
+// (async () => {
+//     let route = await routeIdFromTripId("3953-1639101");
+//     console.log(route);
+// }
+// )();
 /**
  * For a given stop, returns the trips through that stop between the current time
  * and 'wait' minutes in the future.
@@ -26,24 +62,25 @@ const tripsThroughStop = (stpid, wait) => {
             }
         )
 
-        let indexStpId = -1, indexTrpId = -1, indexArr = -1, indexDep = -1;
+        let stopIdIndex = -1, tripIdIndex = -1, arrivalIndex = -1, departureIndex = -1;
         let i = 0;
         let trips = {};
         
-        stopStream.on('line', line => {
+        stopStream.on('line', async line => {
             const fields = line.split(',');
 
             if(i === 0) {
                 // console.log(fields);
                 trips["stop"] = stpid;
-                indexArr = fields.indexOf('arrival_time');
-                indexDep = fields.indexOf('departure_time');
-                indexStpId = fields.indexOf('stop_id');
-                indexTrpId = fields.indexOf('trip_id');
+                arrivalIndex = fields.indexOf('arrival_time');
+                departureIndex = fields.indexOf('departure_time');
+                stopIdIndex = fields.indexOf('stop_id');
+                tripIdIndex = fields.indexOf('trip_id');
                 i++;
-            } else if(fields[indexStpId] === stpid
-                        && valid(fields[indexDep], wait)) {
-                trips[fields[indexTrpId]] = fields[indexArr];
+            } else if(fields[stopIdIndex] === stpid
+                        && valid(fields[departureIndex], wait)) {
+                let rt = await routeIdFromTripId(fields[tripIdIndex]);
+                trips[rt.headsign] = fields[arrivalIndex];
             }
         }).on('close', () => {
             if(trips.length === 1) {
@@ -127,7 +164,7 @@ const adjacency = (tripA, tripB) => {
             return reject(new Error(locData));
         }
 
-        console.log(startCoords.lat + " " + startCoords.lon);
+        // console.log(startCoords.lat + " " + startCoords.lon);
         let splitter = ",";
         let latPos = 4;
         let lonPos = 5;
@@ -170,35 +207,38 @@ const adjacency = (tripA, tripB) => {
 }
 
 // Testing for closest_stops()
-(async () => {
-    let place1 = "aflkewwjfalwkjoivwaejvoiwjvoiwev";
-    let stops = await closest_stops(place1, 5);
-    console.log(stops);
-})();
+// (async () => {
+//     let place1 = "aflkewwjfalwkjoivwaejvoiwjvoiwev";
+//     let stops = await closest_stops(place1, 5);
+//     console.log(stops);
+// })();
 
+/**
+ * 
+ * @param {string} start - starting location 
+ * @returns 
+ */
 const nearestTrips = async (start) => {
-    let closestStops = await closest_stops(start, 5);
+    let closestStops = await closest_stops(start, 2);
+    let stopArr = closestStops.stopPQ.q.splice(1);
     let tripArray = [];
-    console.log(closestStops.stopPQ.q);
+    console.log(stopArr);
+    let wait = 15 * 60;
 
-    closestStops.stopPQ.q.splice(1).map(stop => {
-        stopCodeToId(stop.stpid)
-            .then(stpcd => tripsThroughStop(stpcd, 10))
-            .then(trips => {
-                tripArray.push(trips);
-                return tripArray;
-            })
-            .then(result => {if(result.length === (closestStops.sorted_stops).length){console.log(result)}});
-            console.log(Promise.all(tripArray))
-    })
-    // let x = Promise.all(tripArray);  
-    // console.log(x)  
+    for (let i = 1; i < stopArr.length; i++) {
+        let stpid = stopArr[i].match(/^(\w*)\b/);
+        let stpName = stopArr[i].match(/".*"/);
+        
+        tripArray.push({stopName: stpName[0], trips: await tripsThroughStop(stpid[0], wait)})
+    }
+
     return Promise.all(tripArray);
 }
-// (async () => {
-//     let nTrips = await nearestTrips("1611 Penn Ave, Pittsburgh, PA 15222");
-//     // console.log(nTrips);
-// })();
+
+(async () => {
+    let nTrips = await nearestTrips("1241 haslage ave");
+    console.log(nTrips);
+})();
 
 const isCloseTo = (ptA, ptB, accDist) => {
     return haversine(ptA, ptB) <= accDist;
