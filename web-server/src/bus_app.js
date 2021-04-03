@@ -33,7 +33,6 @@ app.get('/bus', (req, res) => {
 
             console.log(stopNames);
             res.send({
-                // error: error,
                 coordinates: result,
                 stops: stopNames
             })

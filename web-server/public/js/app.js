@@ -12,8 +12,8 @@ coordForm.addEventListener('submit', (e) => {
             if (typeof data.coordinates === 'string') {
                 coords.textContent = data.coordinates;
             } else {
-                let latitude = data.coordinates[1];
-                let longitude = data.coordinates[0];
+                let latitude = data.coordinates.lat;
+                let longitude = data.coordinates.lon;
                 let topStops = "";
                 coords.textContent = "Coordinates: " + latitude + ", " + longitude;
 
