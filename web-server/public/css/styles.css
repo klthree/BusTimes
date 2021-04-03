@@ -10,7 +10,7 @@ body {
 }
 
 #loc-search {
-    margin: auto;
+    margin-left: 25%;
     width: 30%;
 }
 
@@ -23,17 +23,26 @@ label {
     float: right;
 }
 
-#placename {
+.placename {
     font-weight: 500;
     margin-left: 25%;
     padding-top: 10px;
 }
 
-#closestStopList {
+#lists {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: auto;
+}
+
+.stoplist {
     padding-top: 25px;
     padding-left: 30px;
+    padding-right: 30px;
     margin-right: 25%;
     margin-left: 25%;
+    /* margin: auto; */
     border: 5px solid rgb(138, 138, 240);
 }
 

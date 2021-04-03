@@ -19,9 +19,11 @@ html(lang="en")
                     label(for="destination" id="destLabel")= inputLabel2
                     input(type="text" id="destination" class="inputBox" placeholder="Location" autofocus)
                 button Search
-            p(id="placename")
-            div(id="stopListContainer")
-            
+            div(id="lists")
+                p(id="origPlacename" class="placename")
+                div(id="origStopListCont")
+                p(id="destPlacename" class="placename")
+                div(id="destStopListCont")
         div(class='footer')
             include ../includes/footer.pug
 

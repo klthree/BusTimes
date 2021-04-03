@@ -118,11 +118,19 @@ const adjacency = (tripA, tripB) => {
  */
  const closest_stops = (start, top) => {
     return new Promise(async (resolve, reject) => {
-        let locData = await getCoords(start);
+        let locData = null;
+        try {
+            locData = await getCoords(start)
+        } catch(error) {
+            reject(error);
+            // console.log("Inside closest_stops: " + error);
+            return;
+        };
+        // console.log("TEST");
         let startCoords = locData.coordinates;
         let placename = locData.placename;
     
-        console.log(startCoords.lat + " " + startCoords.lon);
+        // console.log(startCoords.lat + " " + startCoords.lon);
         let splitter = ",";
         let latPos = 4;
         let lonPos = 5;
@@ -158,6 +166,7 @@ const adjacency = (tripA, tripB) => {
             resolve({stopPQ: closestStops, placename: placename});
         })
     })
+s
     
     // let walking_distance = haversine(start, {latitude: all_stops[0].lat, longitude: all_stops[0].lon}, {unit: 'mile'})
 }
