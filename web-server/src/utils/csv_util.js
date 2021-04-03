@@ -7,6 +7,7 @@ const PriorityQueue = require('./pq.js').PriorityQueue;
 const all_stops = require ('../data/all_stops.json');
 const getCoords = require('./geocoder.js').getCoords;
 const addTime = require('./dateTimeHelpers').addTime;
+const stringifyBoolean = require('@mapbox/mapbox-sdk/services/service-helpers/stringify-booleans');
 
 /**
  * For a given stop, returns the trips through that stop between the current time
@@ -121,7 +122,11 @@ const adjacency = (tripA, tripB) => {
         let locData = await getCoords(start);
         let startCoords = locData.coordinates;
         let placename = locData.placename;
-    
+        
+        if (typeof locData === "string") {
+            return reject(new Error(locData));
+        }
+
         console.log(startCoords.lat + " " + startCoords.lon);
         let splitter = ",";
         let latPos = 4;
@@ -157,23 +162,26 @@ const adjacency = (tripA, tripB) => {
         }).on('close', () => {
             resolve({stopPQ: closestStops, placename: placename});
         })
-    })
+    }).catch(error => {
+        return error;
+    });
     
     // let walking_distance = haversine(start, {latitude: all_stops[0].lat, longitude: all_stops[0].lon}, {unit: 'mile'})
 }
 
 // Testing for closest_stops()
-// (async () => {
-//     let place1 = "General Robinson st 15212";
-//     let stops = await closest_stops(place1, 5);
-//     console.log(stops);
-// })();
+(async () => {
+    let place1 = "aflkewwjfalwkjoivwaejvoiwjvoiwev";
+    let stops = await closest_stops(place1, 5);
+    console.log(stops);
+})();
 
 const nearestTrips = async (start) => {
     let closestStops = await closest_stops(start, 5);
     let tripArray = [];
+    console.log(closestStops.stopPQ.q);
 
-    (closestStops.sorted_stops).map(stop => {
+    closestStops.stopPQ.q.splice(1).map(stop => {
         stopCodeToId(stop.stpid)
             .then(stpcd => tripsThroughStop(stpcd, 10))
             .then(trips => {
@@ -187,10 +195,10 @@ const nearestTrips = async (start) => {
     // console.log(x)  
     return Promise.all(tripArray);
 }
-(async () => {
-    let nTrips = await nearestTrips("1241 Haslage Ave");
-    console.log(nTrips);
-})();
+// (async () => {
+//     let nTrips = await nearestTrips("1611 Penn Ave, Pittsburgh, PA 15222");
+//     // console.log(nTrips);
+// })();
 
 const isCloseTo = (ptA, ptB, accDist) => {
     return haversine(ptA, ptB) <= accDist;

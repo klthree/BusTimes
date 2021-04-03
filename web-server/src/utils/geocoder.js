@@ -13,12 +13,11 @@ const getCoords = async (loc) => {
         let response = await geocodeSvc.forwardGeocode({query: loc, limit: 1}).send();
         // console.log(response.body);
         if (response.body.features.length == 0) {
-            return "Error: Invalid placename";
+            return "Invalid placename";
         } else {
             let name = response.body.features[0].place_name;
             let coordinates = {lat: response.body.features[0].center[1], lon: response.body.features[0].center[0]};
             return {placename: name, coordinates: coordinates};
-
         }
     } catch (error) {
         console.error(error);
