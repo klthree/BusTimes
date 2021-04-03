@@ -13,11 +13,11 @@ html(lang="en")
         div(class="content")
             form(action="" id="loc-search") 
                 div(origDiv)
-                    label(for="origin")= message1
-                    input(type="text" id="origin" placeholder="Location" autofocus)
+                    label(for="origin")= inputLabel1
+                    input(type="text" id="origin" class="inputBox" placeholder="Location" autofocus)
                 div(id="destDiv")
-                    label(for="destination" id="destLabel")= message2
-                    input(type="text" id="destination" placeholder="Location" autofocus)
+                    label(for="destination" id="destLabel")= inputLabel2
+                    input(type="text" id="destination" class="inputBox" placeholder="Location" autofocus)
                 button Search
             p(id="placename")
             div(id="stopListContainer")

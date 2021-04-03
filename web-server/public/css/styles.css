@@ -11,12 +11,16 @@ body {
 
 #loc-search {
     margin: auto;
-    width: 50%;
+    width: 30%;
 }
 
 label {
     font-size:1.7em;
     padding-right: 10px;
+}
+
+.inputBox {
+    float: right;
 }
 
 #placename {
