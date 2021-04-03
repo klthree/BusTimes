@@ -5,20 +5,25 @@ body {
 }
 
 .content {
+    padding-top: 30px;
     flex-grow: 1;
 }
 
 #loc-search {
-    margin-left: 75px;
+    margin-left: 25%;
 }
 
-#closestStops {
+#closestStopList {
+    padding-top: 15px;
+    padding-left: 30px;
+    margin-right: 25%;
+    margin-left: 25%;
     border: 5px solid rgb(138, 138, 240);
 }
 
 #results {
     font-weight: 500;
-    margin-left: 75px;
+    margin-left: 25%;
     padding-top: 10px;
 }
 

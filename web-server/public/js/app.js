@@ -1,7 +1,7 @@
 const coordForm = document.querySelector('#loc-search');
 const search = document.querySelector('input');
 const coords = document.querySelector('#results');
-const stops = document.querySelector('#closestStops');
+const slc = document.querySelector("#stopListContainer");
 
 coordForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -14,13 +14,15 @@ coordForm.addEventListener('submit', (e) => {
             } else {
                 let latitude = data.coordinates.lat;
                 let longitude = data.coordinates.lon;
-                let topStops = "";
                 coords.textContent = "Coordinates: " + latitude + ", " + longitude;
 
-                stops.innerHTML = "";
+                slc.innerHTML = ""
+                slc.insertAdjacentHTML("afterbegin", "<div id=closestStopList></div>");
+                let stopList = document.querySelector("#closestStopList");
+                
                 for (let i = 0; i < data.stops.length; i++) {
                     let toInsert = '<p>' + data.stops[i][0] + '</p>';
-                    stops.insertAdjacentHTML("afterbegin", toInsert);
+                    stopList.insertAdjacentHTML("afterbegin", toInsert);
                 }
             }
         })
