@@ -11,7 +11,7 @@ const geocodeSvc = forwardGeocodeClient({accessToken: mapkey});
 const getCoords = async (loc) => {
     try {
         let response = await geocodeSvc.forwardGeocode({query: loc, limit: 1}).send();
-        console.log(response.body);
+        // console.log(response.body);
         if (response.body.features.length == 0) {
             return "Error: Invalid placename";
         } else {
