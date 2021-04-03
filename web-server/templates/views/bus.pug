@@ -12,8 +12,12 @@ html(lang="en")
         include ../includes/header.pug
         div(class="content")
             form(action="" id="loc-search") 
-                label(for="location")= message
-                input(type="text" id="location" placeholder="Location" autofocus)
+                div(origDiv)
+                    label(for="origin")= message1
+                    input(type="text" id="origin" placeholder="Location" autofocus)
+                div(id="destDiv")
+                    label(for="destination" id="destLabel")= message2
+                    input(type="text" id="destination" placeholder="Location" autofocus)
                 button Search
             p(id="placename")
             div(id="stopListContainer")

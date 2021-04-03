@@ -37,7 +37,8 @@ app.get('/bus', async (req, res) => {
     } else {
         res.render('bus', {
             title: 'Homepage',
-            message: 'Enter Location:'
+            message1: 'Origin:',
+            message2: 'Destination:'
         });
     }   
     

@@ -187,10 +187,10 @@ const nearestTrips = async (start) => {
     // console.log(x)  
     return Promise.all(tripArray);
 }
-(async () => {
-    let nTrips = await nearestTrips("1241 Haslage Ave");
-    console.log(nTrips);
-})();
+// (async () => {
+//     let nTrips = await nearestTrips("1241 Haslage Ave");
+//     console.log(nTrips);
+// })();
 
 const isCloseTo = (ptA, ptB, accDist) => {
     return haversine(ptA, ptB) <= accDist;

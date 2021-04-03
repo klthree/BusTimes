@@ -10,15 +10,13 @@ body {
 }
 
 #loc-search {
-    margin-left: 25%;
+    margin: auto;
+    width: 50%;
 }
 
-#closestStopList {
-    padding-top: 25px;
-    padding-left: 30px;
-    margin-right: 25%;
-    margin-left: 25%;
-    border: 5px solid rgb(138, 138, 240);
+label {
+    font-size:1.7em;
+    padding-right: 10px;
 }
 
 #placename {
@@ -27,9 +25,12 @@ body {
     padding-top: 10px;
 }
 
-label {
-    font-size:1.7em;
-    padding-right: 10px;
+#closestStopList {
+    padding-top: 25px;
+    padding-left: 30px;
+    margin-right: 25%;
+    margin-left: 25%;
+    border: 5px solid rgb(138, 138, 240);
 }
 
 .footer {
