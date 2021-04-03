@@ -1,28 +1,43 @@
 const coordForm = document.querySelector('#loc-search');
-const search = document.querySelector('input');
-const place = document.querySelector('#placename');
-const slc = document.querySelector("#stopListContainer");
+const originVal = document.querySelector('#origin');
+const destinationVal = document.querySelector('#destination');
+const oPlace = document.querySelector('#origPlacename');
+const dPlace = document.querySelector('#destPlacename');
+const oslc = document.querySelector("#origStopListCont");
+const dslc = document.querySelector("#destStopListCont");
 
-coordForm.addEventListener('submit', (e) => {
+coordForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const searchterm = search.value;
+    oslc.innerHTML = "";
+    dslc.innerHTML = "";
+    const origin = originVal.value;
+    const destination = destinationVal.value;
 
-    fetch('http://localhost:3000/bus?loc=' + searchterm).then((response) => {
-        response.json().then((data) => {
-            if (typeof data.placename === 'string' && data.placename.includes("Error")) {
-                place.textContent = data.placename;
-            } else {
-                place.textContent = "Stops near " + data.placename + ":";
+    let origData = await fetch('http://localhost:3000/bus?loc=' + origin);
+    let destData = await fetch('http://localhost:3000/bus?loc=' + destination);
 
-                slc.innerHTML = ""
-                slc.insertAdjacentHTML("afterbegin", "<div id=closestStopList></div>");
-                let stopList = document.querySelector("#closestStopList");
-                
-                for (let i = 0; i < data.stops.length; i++) {
-                    let toInsert = '<p>' + data.stops[i][0] + '</p>';
-                    stopList.insertAdjacentHTML("afterbegin", toInsert);
-                }
-            }
-        })
-    })
+    let origJSON = await origData.json();
+    let destJSON= await destData.json();
+    
+    if (!origJSON["error"] && !destJSON["error"]) {
+        oPlace.textContent = "Stops near " + origJSON["placename"] + ":";
+        dPlace.textContent = "Stops near " + destJSON["placename"] + ":";
+        oslc.insertAdjacentHTML("afterbegin", "<div id=oClosestStopList class=stoplist></div>");
+        dslc.insertAdjacentHTML("afterbegin", "<div id=dClosestStopList class=stoplist></div>");
+        let oStopList = document.querySelector("#oClosestStopList");
+        let dStopList = document.querySelector("#dClosestStopList");
+
+        for (let i = 0; i < origJSON["stops"].length; i++) {
+            let toInsert = '<p>' + origJSON["stops"][i][0] + '</p>';
+            oStopList.insertAdjacentHTML("afterbegin", toInsert);
+        }
+        for (let i = 0; i < destJSON["stops"].length; i++) {
+            let toInsert = '<p>' + destJSON["stops"][i][0] + '</p>';
+            dStopList.insertAdjacentHTML("afterbegin", toInsert);
+        }
+    } else {
+        oslc.innerHTML = "";
+        dslc.innerHTML = "";
+        oPlace.textContent = "Error: " + origJSON["error"];
+    }
 })
