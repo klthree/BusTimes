@@ -219,18 +219,29 @@ const adjacency = (tripA, tripB) => {
  * @returns 
  */
 const nearestTrips = async (start) => {
-    let closestStops = await closest_stops(start, 2);
+    let perfStart = process.hrtime.bigint();
+    let closestStops = await closest_stops(start, 10);
+    let end = process.hrtime.bigint();
+    let duration = end - perfStart;
+    console.log("closest_stops() took " + duration + " nanoseconds, or " + (duration / BigInt(1000000000) + " seconds"));
+    
     let stopArr = closestStops.stopPQ.q.splice(1);
     let tripArray = [];
     console.log(stopArr);
-    let wait = 15 * 60;
+    let wait = 60;
 
+    let startLoop = process.hrtime.bigint();
     for (let i = 1; i < stopArr.length; i++) {
         let stpid = stopArr[i].match(/^(\w*)\b/);
         let stpName = stopArr[i].match(/".*"/);
         
+        perfStart = process.hrtime.bigint();
         tripArray.push({stopName: stpName[0], trips: await tripsThroughStop(stpid[0], wait)})
+        end = process.hrtime.bigint();
+        console.log("tripsThroughStop() took " + (end - perfStart) + " nanoseconds");
     }
+    let endLoop = process.hrtime.bigint();
+    console.log("tripsThroughStop() took " + ((endLoop - startLoop) / BigInt(1000000000)) + " seconds");
 
     return Promise.all(tripArray);
 }
