@@ -3,6 +3,7 @@ const express = require('express');
 // const expressValidator = require('express-validator');
 const getCoords = require('./utils/geocoder.js').getCoords;
 const closestStops = require('./utils/csv_util').closest_stops;
+const { nextTick } = require('process');
 
 const app = express();
 
@@ -18,77 +19,36 @@ app.get('/', (req, res) => {
     });
 })
 
-app.get('/bus', async (req, res) => {
+app.get('/bus', async (req, res, next) => {
     if (req.query.loc) {
-        let stopData = await closestStops(req.query.loc, 10);
-        let stops = stopData.stopPQ;
-        let placename = stopData.placename;
-        stops = stops.get_q();
-        let stopNames = [];
-        
-        for (let i = 1; i < stops.length; i++) {
-            stopNames.push(stops[i].match(/\".*\"/));
-        }
+        try {
+            let stopData = await closestStops(req.query.loc, 4);
 
-        res.send({
-            placename: placename,
-            stops: stopNames
-        })
+            let stops = stopData.stopPQ;
+            let placename = stopData.placename;
+            stops = stops.get_q();
+            let stopNames = [];
+            
+            for (let i = 1; i < stops.length; i++) {
+                stopNames.push(stops[i].match(/\".*\"/));
+            }
+
+            res.send({
+                placename: placename,
+                stops: stopNames
+            })
+        } 
+        catch(e) {
+            next(e);
+            // return;
+        }
     } else {
         res.render('bus', {
             title: 'Homepage',
-            message: 'Enter Location:'
+            inputLabel1: 'Origin:',
+            inputLabel2: 'Destination:'
         });
-    }   
-    
-    // const start = {
-    //     latitude: 40.444384,
-    //     longitude: -80.000594
-    // }
-    // const dest = {
-    //     latitude: 40.463034,
-    //     longitude: -79.991610
-    // }
-    
-
-    // const near_start = process.closest_stops(start, all_stops, 5);
-    // const near_dest = process.closest_stops(dest, all_stops, 5);
-
-    // const to_take = [];
-    
-    // // https://stackoverflow.com/a/32961666
-    // near_start.sorted_stops.forEach(stop_s => {
-    //     console.log(stop_s);
-    //     near_dest.sorted_stops.forEach(stop_d => {
-    //         stop_s.routes.forEach(rt_s => {
-    //             stop_d.routes.forEach(rt_d => {
-    //                 if(JSON.stringify(rt_s) === JSON.stringify(rt_d)) {
-    //                     to_take.push({rtnm: rt_s, start: stop_s.stpnm, destination: stop_d.stpnm});
-    //                 }
-    //             })
-    //         })
-    //     })
-    // })
-
-    // let result = process.pathfinder(start, dest);
-    // let result = process.adjacency(ras[6], ras[8]);
-
-    // res.send(result);
-
-    // loc = "";
-
-    // let rs = await init.get_routes(loc);
-    // console.log(rs.length);
-
-    // let rd = await init.get_dir(rs);
-
-    // init.get_stops_per_route(ras)
-    // .then(response => {
-    //     fs.writeFileSync("./web-server/src/data/routes_and_stops3.json", JSON.stringify(response), 'utf8', () => {});
-    //     res.send(response);
-    // })
-
-    
+    }    
 })
 
 app.get('/about', (req, res) => {
@@ -97,6 +57,11 @@ app.get('/about', (req, res) => {
 
 app.get('*', (req, res) => {
     res.render("404");
+})
+
+// Error handling
+app.use((err, req, res, next) => {
+    return res.status(422).send({error: err});
 })
 
 app.listen(3000, async () => {

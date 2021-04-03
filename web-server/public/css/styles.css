@@ -11,25 +11,39 @@ body {
 
 #loc-search {
     margin-left: 25%;
-}
-
-#closestStopList {
-    padding-top: 25px;
-    padding-left: 30px;
-    margin-right: 25%;
-    margin-left: 25%;
-    border: 5px solid rgb(138, 138, 240);
-}
-
-#placename {
-    font-weight: 500;
-    margin-left: 25%;
-    padding-top: 10px;
+    width: 30%;
 }
 
 label {
     font-size:1.7em;
     padding-right: 10px;
+}
+
+.inputBox {
+    float: right;
+}
+
+.placename {
+    font-weight: 500;
+    margin-left: 25%;
+    padding-top: 10px;
+}
+
+#lists {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: auto;
+}
+
+.stoplist {
+    padding-top: 25px;
+    padding-left: 30px;
+    padding-right: 30px;
+    margin-right: 25%;
+    margin-left: 25%;
+    /* margin: auto; */
+    border: 5px solid rgb(138, 138, 240);
 }
 
 .footer {

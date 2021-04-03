@@ -156,14 +156,18 @@ const adjacency = (tripA, tripB) => {
  */
  const closest_stops = (start, top) => {
     return new Promise(async (resolve, reject) => {
-        let locData = await getCoords(start);
+        let locData = null;
+        try {
+            locData = await getCoords(start)
+        } catch(error) {
+            reject(error);
+            // console.log("Inside closest_stops: " + error);
+            return;
+        };
+        // console.log("TEST");
         let startCoords = locData.coordinates;
         let placename = locData.placename;
-        
-        if (typeof locData === "string") {
-            return reject(new Error(locData));
-        }
-
+    
         // console.log(startCoords.lat + " " + startCoords.lon);
         let splitter = ",";
         let latPos = 4;
@@ -199,9 +203,8 @@ const adjacency = (tripA, tripB) => {
         }).on('close', () => {
             resolve({stopPQ: closestStops, placename: placename});
         })
-    }).catch(error => {
-        return error;
-    });
+    })
+
     
     // let walking_distance = haversine(start, {latitude: all_stops[0].lat, longitude: all_stops[0].lon}, {unit: 'mile'})
 }
@@ -245,11 +248,10 @@ const nearestTrips = async (start) => {
 
     return Promise.all(tripArray);
 }
-
-(async () => {
-    let nTrips = await nearestTrips("1241 haslage ave");
-    console.log(nTrips);
-})();
+// (async () => {
+//     let nTrips = await nearestTrips("Haslage Ave");
+//     console.log(nTrips);
+// })();
 
 const isCloseTo = (ptA, ptB, accDist) => {
     return haversine(ptA, ptB) <= accDist;

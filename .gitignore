@@ -4,3 +4,7 @@ plan.txt
 keys.js
 .vscode
 *.code-workspace
+*.pdf
+notes.txt
+test.js
+

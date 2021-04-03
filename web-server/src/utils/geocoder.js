@@ -8,20 +8,19 @@ const geocodeSvc = forwardGeocodeClient({accessToken: mapkey});
  * @param {string} loc 
  * @returns {object} - {lat, lon}
  */
-const getCoords = async (loc) => {
-    try {
+const getCoords = (loc) => {
+    return new Promise(async (resolve, reject) => {
         let response = await geocodeSvc.forwardGeocode({query: loc, limit: 1}).send();
-        // console.log(response.body);
+
         if (response.body.features.length == 0) {
-            return "Invalid placename";
+            reject("Invalid placename");
         } else {
             let name = response.body.features[0].place_name;
             let coordinates = {lat: response.body.features[0].center[1], lon: response.body.features[0].center[0]};
-            return {placename: name, coordinates: coordinates};
+            resolve({placename: name, coordinates: coordinates});
         }
-    } catch (error) {
-        console.error(error);
-    }
+    })
+    // .catch(error => console.log("Inside geocoder.js: " + error));
 }
 
 // const processCoords = async () => {
