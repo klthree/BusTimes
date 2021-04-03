@@ -74,15 +74,15 @@ const to12 = (time) => {
 }
 
 // TEST: to12
-(() => {
-    console.log("\nTesting to12(time):")
-    let start = process.hrtime();
-    let result = to12('25:38:59');
-    let end = process.hrtime(start);
+// (() => {
+//     console.log("\nTesting to12(time):")
+//     let start = process.hrtime();
+//     let result = to12('25:38:59');
+//     let end = process.hrtime(start);
 
-    console.log(result);
-    console.log("That took " + end[0] + "s " + end[1]/1000000 + "ms")
-})();
+//     console.log(result);
+//     console.log("That took " + end[0] + "s " + end[1]/1000000 + "ms")
+// })();
 
 /**
  * 
