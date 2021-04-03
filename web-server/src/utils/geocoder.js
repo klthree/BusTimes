@@ -15,8 +15,9 @@ const getCoords = async (loc) => {
         if (response.body.features.length == 0) {
             return "Error: Invalid placename";
         } else {
+            let name = response.body.features[0].place_name;
             let coordinates = {lat: response.body.features[0].center[1], lon: response.body.features[0].center[0]};
-            return coordinates;
+            return {placename: name, coordinates: coordinates};
 
         }
     } catch (error) {

@@ -1,20 +1,18 @@
 const coordForm = document.querySelector('#loc-search');
 const search = document.querySelector('input');
-const coords = document.querySelector('#results');
+const place = document.querySelector('#placename');
 const slc = document.querySelector("#stopListContainer");
 
 coordForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const place = search.value;
+    const searchterm = search.value;
 
-    fetch('http://localhost:3000/bus?loc=' + place).then((response) => {
+    fetch('http://localhost:3000/bus?loc=' + searchterm).then((response) => {
         response.json().then((data) => {
-            if (typeof data.coordinates === 'string') {
-                coords.textContent = data.coordinates;
+            if (typeof data.placename === 'string' && data.placename.includes("Error")) {
+                place.textContent = data.placename;
             } else {
-                let latitude = data.coordinates.lat;
-                let longitude = data.coordinates.lon;
-                coords.textContent = "Coordinates: " + latitude + ", " + longitude;
+                place.textContent = "Stops near " + data.placename + ":";
 
                 slc.innerHTML = ""
                 slc.insertAdjacentHTML("afterbegin", "<div id=closestStopList></div>");

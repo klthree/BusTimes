@@ -15,8 +15,9 @@ html(lang="en")
                 label(for="location")= message
                 input(type="text" id="location" placeholder="Location" autofocus)
                 button Search
-            p(id='results') #{coords}
+            p(id="placename")
             div(id="stopListContainer")
+            
         div(class='footer')
             include ../includes/footer.pug
 

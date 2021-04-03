@@ -120,7 +120,10 @@ const nearestTrips = (start) => {
  */
 const closest_stops = (start, top) => {
     return new Promise(async (resolve, reject) => {
-        let startCoords = await getCoords(start);
+        let locData = await getCoords(start);
+        let startCoords = locData.coordinates;
+        let placename = locData.placename;
+    
         console.log(startCoords.lat + " " + startCoords.lon);
         let splitter = ",";
         let latPos = 4;
@@ -154,7 +157,7 @@ const closest_stops = (start, top) => {
 
             lineNumber++;
         }).on('close', () => {
-            resolve(closestStops);
+            resolve({stopPQ: closestStops, placename: placename});
         })
     })
     

@@ -18,22 +18,21 @@ app.get('/', (req, res) => {
     });
 })
 
-app.get('/bus', (req, res) => {
+app.get('/bus', async (req, res) => {
     if (req.query.loc) {
-        getCoords(req.query.loc) 
-        .then(async (result) => {
-            let stops = await closestStops(req.query.loc, 5);
-            stops = stops.get_q();
-            let stopNames = [];
-            
-            for (let i = 1; i < stops.length; i++) {
-                stopNames.push(stops[i].match(/\".*\"/));
-            }
+        let stopData = await closestStops(req.query.loc, 5);
+        let stops = stopData.stopPQ;
+        let placename = stopData.placename;
+        stops = stops.get_q();
+        let stopNames = [];
+        
+        for (let i = 1; i < stops.length; i++) {
+            stopNames.push(stops[i].match(/\".*\"/));
+        }
 
-            res.send({
-                coordinates: result,
-                stops: stopNames
-            })
+        res.send({
+            placename: placename,
+            stops: stopNames
         })
     } else {
         res.render('bus', {
