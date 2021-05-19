@@ -154,7 +154,7 @@ const adjacency = (tripA, tripB) => {
  * @param {number} top - number of stop names to return.
  * @returns {promise} - object containing 'q', priority q with list of closest stops.
  */
- const closest_stops = (start, top) => {
+ const closest_stops = (start, acceptableDistance) => {
     return new Promise(async (resolve, reject) => {
         let locData = null;
         try {
@@ -188,15 +188,29 @@ const adjacency = (tripA, tripB) => {
             return distToA > distToB; 
         }
         
-        const closestStops = new PriorityQueue(greaterThan, top);
+        const closeEnough = (stopA, acceptDist) => {
+            let stopASplit = stopA.split(splitter);
+            stopALatPos = latPos + stopASplit.length - standardLen;
+            stopALonPos = lonPos + stopASplit.length - standardLen;
+            
+            let distToA = eDistance({lat: aSplit[aLatPos], lon: aSplit[aLonPos]}, startCoords);
+            return distToA <= acceptable_dist;
+        }
+
+        const closestStops = [];
+        
+        // if (top != 0) {
+        //     closestStops = new PriorityQueue(greaterThan, top);
+        // } 
+        
         const stopFile = path.join(__dirname, "../data/stops.txt");
         const stopStream = fs.createReadStream(stopFile);
         const stopStreamReader = readline.createInterface({input:stopStream});
         let lineNumber = 0;
 
         stopStreamReader.on('line', (line) => {
-            if (lineNumber != 0) {
-                closestStops.insert(line);
+            if (lineNumber != 0 && closeEnough(line, acceptableDistance)) {
+                closestStops.push(line)                
             }
 
             lineNumber++;
