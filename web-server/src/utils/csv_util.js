@@ -164,7 +164,7 @@ const adjacency = (tripA, tripB) => {
             // console.log("Inside closest_stops: " + error);
             return;
         };
-        // console.log("TEST");
+        
         let startCoords = locData.coordinates;
         let placename = locData.placename;
     
@@ -192,9 +192,9 @@ const adjacency = (tripA, tripB) => {
             let stopASplit = stopA.split(splitter);
             stopALatPos = latPos + stopASplit.length - standardLen;
             stopALonPos = lonPos + stopASplit.length - standardLen;
+            let distToA = haversine({latitude: startCoords.lat, longitude: startCoords.lon}, {latitude: stopASplit[stopALatPos], longitude: stopASplit[stopALonPos]}, {unit: 'mile'})
             
-            let distToA = eDistance({lat: aSplit[aLatPos], lon: aSplit[aLonPos]}, startCoords);
-            return distToA <= acceptable_dist;
+            return distToA <= acceptDist;
         }
 
         const closestStops = [];

@@ -18,6 +18,7 @@ coordForm.addEventListener('submit', async (e) => {
 
     let origJSON = await origData.json();
     let destJSON= await destData.json();
+    console.log(origJSON);
     
     if (!origJSON["error"] && !destJSON["error"]) {
         oPlace.textContent = "Stops near " + origJSON["placename"] + ":";

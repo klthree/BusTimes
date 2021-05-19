@@ -22,8 +22,8 @@ app.get('/', (req, res) => {
 app.get('/bus', async (req, res, next) => {
     if (req.query.loc) {
         try {
-            let stopData = await closestStops(req.query.loc, 0.5);
-
+            let stopData = await closestStops(req.query.loc, 0.25);
+            console.log(stopData);
             let stops = stopData.stopPQ;
             let placename = stopData.placename;
             stops = stops.get_q();
