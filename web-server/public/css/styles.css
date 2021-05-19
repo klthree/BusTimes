@@ -9,6 +9,10 @@ body {
     flex-grow: 1;
 }
 
+.text {
+    padding: 100px 100px 0px 100px;
+}
+
 #loc-search {
     margin-left: 25%;
     width: 30%;
@@ -37,7 +41,7 @@ label {
 }
 
 .stoplist {
-    padding-top: 25px;
+    padding-top: 20px;
     padding-left: 30px;
     padding-right: 30px;
     margin-right: 25%;
