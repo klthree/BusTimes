@@ -165,8 +165,9 @@ const adjacency = (tripA, tripB) => {
             return;
         };
         
-        let startCoords = locData.coordinates;
-        let placename = locData.placename;
+        // let startCoords = locData.coordinates;
+        
+        // let placename = locData.placename;
     
         // console.log(startCoords.lat + " " + startCoords.lon);
         let splitter = ",";
@@ -174,25 +175,34 @@ const adjacency = (tripA, tripB) => {
         let lonPos = 5;
         let standardLen = 7;
 
-        const greaterThan = (a, b) => {
-            let aSplit = a.split(splitter);
-            let bSplit = b.split(splitter);
-            aLatPos = latPos + aSplit.length - standardLen;
-            aLonPos = lonPos + aSplit.length - standardLen;
-            bLatPos = latPos + bSplit.length - standardLen;
-            bLonPos = lonPos + bSplit.length - standardLen;
+        // const greaterThan = (a, b) => {
+        //     let aSplit = a.split(splitter);
+        //     let bSplit = b.split(splitter);
+        //     aLatPos = latPos + aSplit.length - standardLen;
+        //     aLonPos = lonPos + aSplit.length - standardLen;
+        //     bLatPos = latPos + bSplit.length - standardLen;
+        //     bLonPos = lonPos + bSplit.length - standardLen;
 
-            let distToA = eDistance({lat: aSplit[aLatPos], lon: aSplit[aLonPos]}, startCoords);
-            let distToB = eDistance({lat: bSplit[bLatPos], lon: bSplit[bLonPos]}, startCoords);
+        //     let distToA = eDistance({lat: aSplit[aLatPos], lon: aSplit[aLonPos]}, startCoords);
+        //     let distToB = eDistance({lat: bSplit[bLatPos], lon: bSplit[bLonPos]}, startCoords);
 
-            return distToA > distToB; 
-        }
+        //     return distToA > distToB; 
+        // }
         
+        let startSplit = start.split(splitter);
+        let startLatPosition = latPos + startSplit.length - standardLen;
+        let startLonPosition = lonPos + startSplit.length - standardLen;
+        let startLatitude = startSplit[startLatPosition];
+        let startLongitude = startSplit[startLonPosition];
+        let stopname = start.match(/\".*\"/);
+        console.log(startLatitude);
+        console.log(startLongitude);
+
         const closeEnough = (stopA, acceptDist) => {
             let stopASplit = stopA.split(splitter);
             stopALatPos = latPos + stopASplit.length - standardLen;
             stopALonPos = lonPos + stopASplit.length - standardLen;
-            let distToA = haversine({latitude: startCoords.lat, longitude: startCoords.lon}, {latitude: stopASplit[stopALatPos], longitude: stopASplit[stopALonPos]}, {unit: 'mile'})
+            let distToA = haversine({latitude: startLatitude, longitude: startLongitude}, {latitude: stopASplit[stopALatPos], longitude: stopASplit[stopALonPos]}, {unit: 'mile'})
             
             return distToA <= acceptDist;
         }
@@ -215,7 +225,7 @@ const adjacency = (tripA, tripB) => {
 
             lineNumber++;
         }).on('close', () => {
-            resolve({stopPQ: closestStops, placename: placename});
+            resolve({stopPQ: closestStops, stopname: stopname});
         })
     })
 

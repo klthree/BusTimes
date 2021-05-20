@@ -1,11 +1,56 @@
 const fs = require('fs');
+const path = require('path');
+const readline = require('readline');
 const got = require('got');
 const haversine = require('haversine');
 const ras2 = require ('../data/routes_and_stops2.json');
 const all_stops = require ('../data/all_stops');
 const baseURL = 'http://truetime.portauthority.org/bustime/api/v3';
 const bus_key = require('./keys').busKey;
+const closestStops = require('./csv_util.js').closest_stops;
 
+const createBaseGraph = () => {
+    return new Promise((resolve, reject) => {
+        const stopFile = path.join(__dirname, "../data/stops.txt");
+        console.log(stopFile);
+        const stopStream = fs.createReadStream(stopFile);
+        const stopStreamReader = readline.createInterface({input:stopStream});
+        let lineNumber = 0;
+        const stopGraph = {};
+        console.log("Hello");
+
+        stopStreamReader.on('line', (line) => {
+            if (lineNumber != 0) {
+                stopGraph[line] = [];               
+            }
+
+            lineNumber++;
+        }).on('close', () => {
+            console.log("Closing...");
+            resolve(stopGraph);
+        })
+    })
+}
+
+// (async () => {
+//     const sg = await createBaseGraph();
+
+//     console.log(sg);
+// })();
+
+const addWalkingNodes = async baseGraph => {
+    for (const n in baseGraph) {
+        baseGraph[n] = await closestStops(n);
+        console.log(n + ": " + baseGraph[n].stopPQ);
+    } 
+
+    console.log(baseGraph);
+}
+
+(async () => {
+    const graphSkeleton = await createBaseGraph();
+    addWalkingNodes(graphSkeleton);
+})();
 
 const pathfinder = (start, end) => {
     const near_start = closest_stops(start, all_stops, 5);
@@ -138,40 +183,10 @@ const get_vehicles = async (options) => {
 }
 // get_vehicles({route: 6}).then(resp => console.log(resp));
 
-/**
- * Given a location in latitude and longitude, a list of stops from a JSON file,
- * and a number top, returns top number of stops closest to the given coordinates.
- * 
- * @param {Object} start - Contains latitude and longitude properties.
- * @param {number} top - Number of results to return.
- * @returns 
- */
-const closest_stops = (start, top) => {
-    all_stops.sort((stopA, stopB) => {
-        return haversine(start, {latitude: stopA.lat, longitude: stopA.lon})
-            - haversine(start, {latitude: stopB.lat, longitude: stopB.lon})
-    })
-    
-    let walking_distance = haversine(start, {latitude: all_stops[0].lat, longitude: all_stops[0].lon}, {unit: 'mile'})
-
-    return {walking_distance: walking_distance, sorted_stops: all_stops.slice(0, top)};
-}
-
-
-let time_convert = (military_time) => {
-    if(parseInt(military_time.slice(0, 2)) > 12) {
-        let hour = parseInt(military_time.slice(0, 2)) - 12;
-        military_time = hour.toString() + military_time.slice(2) + " PM";
-    } else {
-        military_time += " AM";
-    }
-    return military_time;
-}
 
 module.exports = {
     pathfinder,
     get_predictions,
-    closest_stops,
     get_vehicles,
     adjacency
 }
