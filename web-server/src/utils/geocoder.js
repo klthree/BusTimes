@@ -1,4 +1,4 @@
-const mapkey = require('./keys.js').mapboxKey;
+// const mapkey = require('./keys.js').mapboxKey;
 const forwardGeocodeClient = require('@mapbox/mapbox-sdk/services/geocoding');
 const geocodeSvc = forwardGeocodeClient({accessToken: mapkey});
 

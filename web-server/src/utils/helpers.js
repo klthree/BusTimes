@@ -1,5 +1,6 @@
-/*
+const haversine = require('haversine');
 
+/*
     const euclideanDistance = (ptA, ptB)
     const containsTrip = (obj, tripId)    
     const containsStop = (arr, stopId)
@@ -128,9 +129,29 @@ const trimmer = (obj) => {
     }
 }
 
+const distanceBetweenStops = (stopA, stopB, closeDistance) => {
+    
+    let splitter = ",";
+    let latPos = 4;
+    let lonPos = 5;
+    let standardLen = 7;
+
+    let stopASplit = stopA.split(splitter);
+    stopALatPos = latPos + stopASplit.length - standardLen;
+    stopALonPos = lonPos + stopASplit.length - standardLen;
+    
+    let stopBSplit = stopB.split(splitter);
+    stopBLatPos = latPos + stopBSplit.length - standardLen;
+    stopBLonPos = lonPos + stopBSplit.length - standardLen;
+    let distBToA = haversine({latitude: stopBSplit[stopBLatPos], longitude: stopBSplit[stopBLonPos]}, {latitude: stopASplit[stopALatPos], longitude: stopASplit[stopALonPos]}, {unit: 'mile'})
+    
+    return distBToA;
+}
+
 module.exports = {
     euclideanDistance,
     containsTrip,
     containsStop,
-    trimmer
+    trimmer,
+    distanceBetweenStops
 }

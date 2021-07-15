@@ -3,10 +3,11 @@ const path = require('path');
 const readline = require('readline');
 const got = require('got');
 const haversine = require('haversine');
+const distanceBetweenStops = require('./helpers.js').distanceBetweenStops;
 const ras2 = require ('../data/routes_and_stops2.json');
 const all_stops = require ('../data/all_stops');
 const baseURL = 'http://truetime.portauthority.org/bustime/api/v3';
-const bus_key = require('./keys').busKey;
+// const bus_key = require('./keys').busKey;
 const closestStops = require('./csv_util.js').closest_stops;
 
 const createBaseGraph = () => {
@@ -39,12 +40,27 @@ const createBaseGraph = () => {
 // })();
 
 const addWalkingNodes = async baseGraph => {
-    for (const n in baseGraph) {
-        baseGraph[n] = await closestStops(n);
-        console.log(n + ": " + baseGraph[n].stopPQ);
-    } 
 
-    console.log(baseGraph);
+    const finalGraph = {};
+
+    for (const stopNode in baseGraph) {
+    
+        let stopid = stopNode.split(",")[0];
+        finalGraph[stopNode.split(",")[0]] = [];
+    
+        for (const potentialNeighbor in baseGraph) {
+    
+            const distance = distanceBetweenStops(stopNode, potentialNeighbor);
+    
+            if (distance < 0.15) {
+                
+                finalGraph[stopid].push({stopid: potentialNeighbor.split(",")[0], method: "walk", distance: distance});
+            }
+        }
+    } 
+    
+    fs.writeFileSync("./web-server/src/data/stopGraph.json", JSON.stringify(finalGraph), 'utf8', () => {});
+    
 }
 
 (async () => {
